@@ -1,18 +1,30 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { SplashScreen, Stack } from 'expo-router';
-import { useEffect } from 'react';
-import { useColorScheme } from 'react-native';
+import "react-native-url-polyfill/auto";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { useFonts } from "expo-font";
+import { useState, useEffect } from "react";
+import { supabase } from "../utils/supabase";
+import { Session } from "@supabase/supabase-js";
+import {
+  ActivityIndicator,
+  useColorScheme,
+  SafeAreaView,
+  StatusBar,
+  Text,
+  View,
+} from "react-native";
+//import { Text, View } from "../components/Themed";
+
+import { SplashScreen, Stack, router } from "expo-router";
+import SignHeader from "../components/headers/SignHeader";
 
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
-} from 'expo-router';
+} from "expo-router";
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
+  initialRouteName: "/(auth)/welcome",
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -20,7 +32,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
   });
 
@@ -43,14 +55,56 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
+  const [session, setSession] = useState<Session | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+  }, []);
+
+  console.log("hello", session);
+  console.log("goood", session);
+
+  useEffect(() => {
+    if (session && session.user) {
+      router.replace("/(tabs)/home");
+    } else {
+      router.replace("/(auth)/welcome");
+    }
+  }, [session, router]);
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
-    </ThemeProvider>
+    <>
+      {session != null && session.user ? (
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+        </Stack>
+      ) : (
+        <Stack initialRouteName="(auth)/welcome">
+          <Stack.Screen
+            name="(auth)/welcome"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="(auth)/sign-in"
+            options={{
+              header: () => <SignHeader title="Sign In" />,
+            }}
+          />
+          <Stack.Screen
+            name="(auth)/sign-up"
+            options={{
+              header: () => <SignHeader title="Sign Up" />,
+            }}
+          />
+        </Stack>
+      )}
+    </>
   );
 }

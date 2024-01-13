@@ -3,6 +3,9 @@
   "compilerOptions": {
     "strict": true,
   },
+  "typeRoots": [
+    "./types"
+  ],
   "include": [
     "**/*.ts",
     "**/*.tsx",
