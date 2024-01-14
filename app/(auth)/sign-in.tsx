@@ -9,14 +9,20 @@ import {
   View,
   Text,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Pressable,
 } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { router } from "expo-router";
 import { supabase } from "../../utils/supabase";
 
-import * as WebBrowser from "expo-web-browser";
-import { useWarmUpBrowser } from "../../hooks/warnUpBrowser";
-
-WebBrowser.maybeCompleteAuthSession();
+//import * as WebBrowser from "expo-web-browser";
+//import { useWarmUpBrowser } from "../../hooks/warnUpBrowser";
+//
+//WebBrowser.maybeCompleteAuthSession();
 
 const { width, height } = Dimensions.get("window");
 
@@ -92,71 +98,99 @@ export default function SignInScreen() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: "white" }}>
+    <>
       <StatusBar barStyle="dark-content" />
-      <View
-        style={{
-          marginTop: height * 0.07,
-          alignItems: "center",
-        }}
+      <KeyboardAwareScrollView
+        style={{ flex: 1, backgroundColor: "white" }}
+        contentContainerStyle={{ flexGrow: 1 }}
+        extraScrollHeight={20}
       >
-        <Image
-          source={require("../../assets/images/SignInImage.png")}
-          style={{
-            width: 250,
-            height: 140,
-            backgroundColor: "white",
-            marginBottom: height * 0.07,
-          }}
-          resizeMode="contain"
-        />
-        <TextInput
-          style={{
-            height: 40,
-            width: width * 0.8,
-            backgroundColor: "#F1F1F1",
-            borderRadius: 20,
-            paddingLeft: 20,
-          }}
-          placeholder="Email"
-          placeholderTextColor={"gray"}
-          value={email}
-          onChangeText={setEmail}
-        />
-        <TextInput
-          style={{
-            height: 40,
-            width: width * 0.8,
-            backgroundColor: "#F1F1F1",
-            borderRadius: 20,
-            paddingLeft: 20,
-            marginTop: 20,
-          }}
-          placeholder="Password"
-          placeholderTextColor={"gray"}
-          secureTextEntry={true}
-          value={password}
-          onChangeText={setPassword}
-        />
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View
+            style={{
+              alignItems: "center",
+              flex: 1,
+            }}
+          >
+            <Image
+              source={require("../../assets/images/SignInImage.png")}
+              style={{
+                width: 250,
+                height: height * 0.33,
+                backgroundColor: "white",
+                paddingTop: 150,
+                paddingBottom: 130,
+              }}
+              resizeMode="contain"
+            />
 
-        <TouchableOpacity
-          style={{
-            backgroundColor: "#CE3535",
-            width: width * 0.8,
-            height: 40,
-            borderRadius: 20,
-            alignItems: "center",
-            justifyContent: "center",
-            marginTop: 40,
-          }}
-          onPress={() => signInWithEmail()}
-          disabled={loading}
-        >
-          <Text style={{ color: "#F1F1F1", fontSize: 18, fontWeight: "bold" }}>
-            Sign In
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+            <TextInput
+              style={{
+                height: 40,
+                width: width * 0.8,
+                backgroundColor: "#F1F1F1",
+                borderRadius: 20,
+                paddingLeft: 20,
+                paddingRight: 20,
+              }}
+              placeholder="Email"
+              placeholderTextColor={"gray"}
+              value={email}
+              onChangeText={setEmail}
+            />
+            <TextInput
+              style={{
+                height: 40,
+                width: width * 0.8,
+                backgroundColor: "#F1F1F1",
+                borderRadius: 20,
+                paddingLeft: 20,
+                paddingRight: 20,
+                marginTop: 20,
+              }}
+              placeholder="Password"
+              placeholderTextColor={"gray"}
+              secureTextEntry={true}
+              value={password}
+              onChangeText={setPassword}
+            />
+
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#CE3535",
+                width: width * 0.8,
+                height: 40,
+                borderRadius: 20,
+                alignItems: "center",
+                justifyContent: "center",
+                marginTop: 40,
+              }}
+              onPress={() => signInWithEmail()}
+              disabled={loading}
+            >
+              <Text
+                style={{ color: "#F1F1F1", fontSize: 18, fontWeight: "bold" }}
+              >
+                Sign In
+              </Text>
+            </TouchableOpacity>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "flex-end",
+                paddingBottom: 30,
+              }}
+            >
+              <Text style={{}}>Don't have an account? </Text>
+              <Pressable onPress={() => router.replace("/(auth)/sign-up")}>
+                <Text style={{ color: "#CE3535" }}>Sign up</Text>
+              </Pressable>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAwareScrollView>
+    </>
   );
 }

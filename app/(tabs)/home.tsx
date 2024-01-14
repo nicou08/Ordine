@@ -1,11 +1,20 @@
 import React from "react";
 
-import { StyleSheet, Button, TextInput, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Dimensions,
+  Button,
+  TextInput,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+} from "react-native";
 
 import EditScreenInfo from "../../components/EditScreenInfo";
 import { Text, View } from "../../components/Themed";
 
 import { supabase } from "../../utils/supabase";
+
+const { width, height } = Dimensions.get("window");
 
 export default function TabOneScreen() {
   return (
@@ -19,12 +28,24 @@ export default function TabOneScreen() {
       <View>
         <Text>what the fuck</Text>
       </View>
+
       <TouchableOpacity
-        style={{ marginTop: 100, backgroundColor: "red" }}
+        style={{ marginTop: 100, backgroundColor: "red", paddingBottom: 120 }}
         onPress={() => supabase.auth.signOut()}
       >
         <Text>SIGNNN OUTT</Text>
       </TouchableOpacity>
+      <TextInput
+        style={{
+          height: 40,
+          width: width * 0.8,
+          backgroundColor: "#F1F1F1",
+          borderRadius: 20,
+          paddingLeft: 20,
+        }}
+        placeholder="Email"
+        placeholderTextColor={"gray"}
+      />
     </View>
   );
 }
