@@ -4,18 +4,11 @@ import { useFonts } from "expo-font";
 import { useState, useEffect } from "react";
 import { supabase } from "../utils/supabase";
 import { Session } from "@supabase/supabase-js";
-import {
-  ActivityIndicator,
-  useColorScheme,
-  SafeAreaView,
-  StatusBar,
-  Text,
-  View,
-} from "react-native";
-//import { Text, View } from "../components/Themed";
 
-import { SplashScreen, Stack, router } from "expo-router";
+import { SplashScreen, Stack, Tabs, router, Slot } from "expo-router";
 import SignHeader from "../components/headers/SignHeader";
+import HomeSearchHeader from "../components/headers/HomeSearchHeader";
+import TabLayout from "./(tabs)/_layout";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -67,8 +60,7 @@ function RootLayoutNav() {
     });
   }, []);
 
-  console.log("hello", session);
-  console.log("goood", session);
+  console.log("HELLOO", session);
 
   useEffect(() => {
     if (session && session.user) {
@@ -82,8 +74,7 @@ function RootLayoutNav() {
     <>
       {session != null && session.user ? (
         <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+          <Stack.Screen name="(tabs)" />
         </Stack>
       ) : (
         <Stack initialRouteName="(auth)/welcome">

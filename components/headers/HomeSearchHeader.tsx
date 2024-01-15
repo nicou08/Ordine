@@ -16,7 +16,7 @@ export default function HomeSearchHeader({ title }: { title: string }) {
         elevation: 5,
       }}
     >
-      <Text>Hello</Text>
+      <Text>Hello {title}</Text>
     </View>
   );
 }

@@ -87,6 +87,8 @@ export default function SignUpScreen() {
               }}
               placeholder="Enter your email"
               placeholderTextColor={"gray"}
+              keyboardType="email-address"
+              textContentType="emailAddress"
               value={email}
               onChangeText={setEmail}
             />
@@ -119,10 +121,12 @@ export default function SignUpScreen() {
               }}
               placeholder="Enter your password"
               placeholderTextColor={"gray"}
+              textContentType="password"
               value={password}
               onChangeText={setPassword}
             />
           </View>
+
           <View
             style={{
               flexDirection: "row",
@@ -215,6 +219,7 @@ export default function SignUpScreen() {
               }}
               placeholder="Enter your phone number"
               placeholderTextColor={"gray"}
+              keyboardType="phone-pad"
               value={phone}
               onChangeText={setPhone}
             />

@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
 } from "react-native";
-
+import * as Router from "expo-router";
 import EditScreenInfo from "../../components/EditScreenInfo";
 import { Text, View } from "../../components/Themed";
 
@@ -17,6 +17,7 @@ import { supabase } from "../../utils/supabase";
 const { width, height } = Dimensions.get("window");
 
 export default function TabOneScreen() {
+  const route = Router.usePathname();
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tab One HUHHHhhmm</Text>
@@ -26,26 +27,15 @@ export default function TabOneScreen() {
         darkColor="rgba(255,255,255,0.1)"
       />
       <View>
-        <Text>what the fuck</Text>
+        <Text>what the fuck {route}</Text>
       </View>
 
       <TouchableOpacity
-        style={{ marginTop: 100, backgroundColor: "red", paddingBottom: 120 }}
+        style={{ marginTop: 100, backgroundColor: "red" }}
         onPress={() => supabase.auth.signOut()}
       >
         <Text>SIGNNN OUTT</Text>
       </TouchableOpacity>
-      <TextInput
-        style={{
-          height: 40,
-          width: width * 0.8,
-          backgroundColor: "#F1F1F1",
-          borderRadius: 20,
-          paddingLeft: 20,
-        }}
-        placeholder="Email"
-        placeholderTextColor={"gray"}
-      />
     </View>
   );
 }

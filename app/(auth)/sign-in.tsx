@@ -9,7 +9,6 @@ import {
   View,
   Text,
   Alert,
-  KeyboardAvoidingView,
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
@@ -104,92 +103,110 @@ export default function SignInScreen() {
         style={{ flex: 1, backgroundColor: "white" }}
         contentContainerStyle={{ flexGrow: 1 }}
         extraScrollHeight={20}
+        keyboardOpeningTime={0}
       >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View
+          style={{
+            alignItems: "center",
+            flex: 1,
+          }}
+        >
+          <Image
+            source={require("../../assets/images/SignInImage.png")}
+            style={{
+              width: 250,
+              height: height * 0.36,
+              paddingTop: 0,
+              paddingBottom: 10,
+            }}
+            resizeMode="contain"
+          />
+          <TextInput
+            style={{
+              height: 40,
+              width: width * 0.8,
+              backgroundColor: "#F1F1F1",
+              borderRadius: 20,
+              paddingLeft: 20,
+              paddingRight: 20,
+            }}
+            placeholder="Email"
+            placeholderTextColor={"gray"}
+            textContentType="none"
+            returnKeyType="done"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          <TextInput
+            style={{
+              height: 0,
+              width: width * 0.8,
+              backgroundColor: "#F1F1F1",
+              borderRadius: 20,
+              paddingLeft: 20,
+              paddingRight: 20,
+            }}
+            placeholder="Email"
+            placeholderTextColor={"white"}
+            textContentType="none"
+            returnKeyType="done"
+          />
+          <TextInput
+            style={{
+              height: 40,
+              width: width * 0.8,
+              backgroundColor: "#F1F1F1",
+              borderRadius: 20,
+              paddingLeft: 20,
+              paddingRight: 20,
+              marginTop: 20,
+            }}
+            placeholder="Password"
+            placeholderTextColor={"gray"}
+            textContentType="password"
+            returnKeyType="done"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={true}
+          />
+
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#CE3535",
+              width: width * 0.8,
+              height: 40,
+              borderRadius: 20,
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: 40,
+            }}
+            onPress={() => signInWithEmail()}
+            disabled={loading}
+          >
+            <Text
+              style={{ color: "#F1F1F1", fontSize: 18, fontWeight: "bold" }}
+            >
+              Sign In
+            </Text>
+          </TouchableOpacity>
           <View
             style={{
-              alignItems: "center",
               flex: 1,
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "flex-end",
+              paddingBottom: 30,
             }}
           >
-            <Image
-              source={require("../../assets/images/SignInImage.png")}
-              style={{
-                width: 250,
-                height: height * 0.33,
-                backgroundColor: "white",
-                paddingTop: 150,
-                paddingBottom: 130,
-              }}
-              resizeMode="contain"
-            />
-
-            <TextInput
-              style={{
-                height: 40,
-                width: width * 0.8,
-                backgroundColor: "#F1F1F1",
-                borderRadius: 20,
-                paddingLeft: 20,
-                paddingRight: 20,
-              }}
-              placeholder="Email"
-              placeholderTextColor={"gray"}
-              value={email}
-              onChangeText={setEmail}
-            />
-            <TextInput
-              style={{
-                height: 40,
-                width: width * 0.8,
-                backgroundColor: "#F1F1F1",
-                borderRadius: 20,
-                paddingLeft: 20,
-                paddingRight: 20,
-                marginTop: 20,
-              }}
-              placeholder="Password"
-              placeholderTextColor={"gray"}
-              secureTextEntry={true}
-              value={password}
-              onChangeText={setPassword}
-            />
-
-            <TouchableOpacity
-              style={{
-                backgroundColor: "#CE3535",
-                width: width * 0.8,
-                height: 40,
-                borderRadius: 20,
-                alignItems: "center",
-                justifyContent: "center",
-                marginTop: 40,
-              }}
-              onPress={() => signInWithEmail()}
-              disabled={loading}
-            >
-              <Text
-                style={{ color: "#F1F1F1", fontSize: 18, fontWeight: "bold" }}
-              >
-                Sign In
-              </Text>
-            </TouchableOpacity>
-            <View
-              style={{
-                flex: 1,
-                flexDirection: "row",
-                justifyContent: "center",
-                alignItems: "flex-end",
-                paddingBottom: 30,
-              }}
-            >
-              <Text style={{}}>Don't have an account? </Text>
-              <Pressable onPress={() => router.replace("/(auth)/sign-up")}>
-                <Text style={{ color: "#CE3535" }}>Sign up</Text>
-              </Pressable>
-            </View>
+            <Text style={{}}>Don't have an account? </Text>
+            <Pressable onPress={() => router.replace("/(auth)/sign-up")}>
+              <Text style={{ color: "#CE3535" }}>Sign up</Text>
+            </Pressable>
           </View>
-        </TouchableWithoutFeedback>
+        </View>
       </KeyboardAwareScrollView>
     </>
   );
