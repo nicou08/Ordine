@@ -1,10 +1,17 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { supabase } from "../../utils/supabase";
 
 export default function ReserveScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>ACCOUNT</Text>
       <View style={styles.separator} />
+      <TouchableOpacity
+        style={{ marginTop: 100, backgroundColor: "red" }}
+        onPress={() => supabase.auth.signOut()}
+      >
+        <Text>SIGNNN OUTT</Text>
+      </TouchableOpacity>
     </View>
   );
 }

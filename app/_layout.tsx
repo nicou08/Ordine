@@ -74,7 +74,7 @@ function RootLayoutNav() {
     <>
       {session != null && session.user ? (
         <Stack>
-          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         </Stack>
       ) : (
         <Stack initialRouteName="(auth)/welcome">

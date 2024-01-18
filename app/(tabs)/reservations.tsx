@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 
-export default function ReserveScreen() {
+export default function ReservationsScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>This is reserve screen</Text>

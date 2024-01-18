@@ -1,11 +1,14 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, StatusBar } from "react-native";
 
 export default function SearchScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>THIS IS SEARCH SCREENn</Text>
-      <View style={styles.separator} />
-    </View>
+    <>
+      <StatusBar barStyle="dark-content" />
+      <View style={styles.container}>
+        <Text style={styles.title}>THIS IS SEARCH SCREENn</Text>
+        <View style={styles.separator} />
+      </View>
+    </>
   );
 }
 

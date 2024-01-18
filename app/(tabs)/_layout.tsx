@@ -1,8 +1,11 @@
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  AntDesign,
+  MaterialCommunityIcons,
+  FontAwesome5,
+  FontAwesome,
+  Ionicons,
+} from "@expo/vector-icons";
 import { Link, Tabs, Stack, Slot } from "expo-router";
-import { getHeaderTitle } from "@react-navigation/elements";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import { Pressable, useColorScheme } from "react-native";
 
@@ -10,7 +13,6 @@ import Colors from "../../constants/Colors";
 import HomeSearchHeader from "../../components/headers/HomeSearchHeader";
 import React from "react";
 
-const Tabss = createBottomTabNavigator();
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
  */
@@ -21,30 +23,15 @@ function TabBarIcon(props: {
   return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
 }
 
-const SearchScreen = () => {
-  return (
-    <Stack>
-      <Stack.Screen
-        name="search"
-        options={{
-          header: () => <HomeSearchHeader title="Search" />,
-        }}
-      />
-    </Stack>
-  );
-};
-
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors["light"].tint,
-        headerShown: false,
+        tabBarActiveTintColor: "#CE3535",
       }}
     >
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="home"
         options={{
           title: "Home",
@@ -66,33 +53,37 @@ export default function TabLayout() {
             </Link>
           ),
         }}
+      /> */}
+
+      <Tabs.Screen
+        name="home"
+        options={{
+          title: "Home",
+          tabBarIcon: ({ color }) => (
+            //<AntDesign name="home" size={28} color={color} />
+            //<Ionicons name="home" size={28} color={color} />
+            <FontAwesome5 name="home" size={28} color={color} />
+          ),
+          header: () => <HomeSearchHeader title="Restaurants" />,
+        }}
       />
       <Tabs.Screen
         name="search"
-        //component={SearchScreen}
         options={{
           title: "Search",
           tabBarIcon: ({ color }) => (
             <AntDesign name="search1" size={28} color={color} />
           ),
+          header: () => <HomeSearchHeader title="Search" />,
         }}
-      >
-        {/* {() => (
-          <Stack>
-            <Stack.Screen
-              name="search"
-              options={{
-                header: () => <HomeSearchHeader title="Search" />,
-              }}
-            />
-          </Stack>
-        )} */}
-      </Tabs.Screen>
+      />
       <Tabs.Screen
-        name="reserve"
+        name="reservations"
         options={{
-          title: "Reserve",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: "Reservations",
+          tabBarIcon: ({ color }) => (
+            <AntDesign name="calendar" size={24} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
@@ -101,7 +92,7 @@ export default function TabLayout() {
           title: "Account",
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons
-              name="account-circle-outline"
+              name="account-circle"
               size={28}
               color={color}
             />
