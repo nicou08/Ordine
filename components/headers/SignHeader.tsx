@@ -27,13 +27,11 @@ export default function SignHeader({ title }: { title: string }) {
           marginLeft: 20,
         }}
       >
-        <TouchableOpacity onPress={() => router.back()}>
-          <AntDesign
-            name="arrowleft"
-            size={30}
-            color="black"
-            style={{ marginBottom: 15 }}
-          />
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={{ width: 30, marginBottom: 15 }}
+        >
+          <AntDesign name="arrowleft" size={30} color="black" />
         </TouchableOpacity>
 
         <Text style={{ color: "black", fontSize: 37, fontWeight: "bold" }}>

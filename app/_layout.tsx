@@ -5,10 +5,15 @@ import { useState, useEffect } from "react";
 import { supabase } from "../utils/supabase";
 import { Session } from "@supabase/supabase-js";
 
-import { SplashScreen, Stack, Tabs, router, Slot } from "expo-router";
+import {
+  SplashScreen,
+  Stack,
+  router,
+  usePathname,
+  useLocalSearchParams,
+} from "expo-router";
 import SignHeader from "../components/headers/SignHeader";
-import HomeSearchHeader from "../components/headers/HomeSearchHeader";
-import TabLayout from "./(tabs)/_layout";
+import RestaurantHeader from "../components/headers/RestaurantHeader";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -75,6 +80,19 @@ function RootLayoutNav() {
       {session != null && session.user ? (
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+
+          <Stack.Screen
+            name="(screens)/store/[restaurant]"
+            options={{
+              header: () => <RestaurantHeader />,
+            }}
+          />
+          <Stack.Screen
+            name="(screens)/store/test"
+            options={{
+              header: () => <RestaurantHeader />,
+            }}
+          />
         </Stack>
       ) : (
         <Stack initialRouteName="(auth)/welcome">

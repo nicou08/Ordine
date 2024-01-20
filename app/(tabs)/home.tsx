@@ -2,12 +2,17 @@ import React, { useState } from "react";
 import {
   Dimensions,
   TouchableOpacity,
+  Pressable,
   StatusBar,
   ScrollView,
   View,
   Text,
   FlatList,
+  Image,
 } from "react-native";
+import { Link, router } from "expo-router";
+import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
+
 import { supabase } from "../../utils/supabase";
 import { sampleRestaurants } from "../../constants/SampleRestaurants";
 
@@ -23,29 +28,112 @@ function MyCarousel({ data }: { data?: any }) {
       renderItem={({ item, index }) => (
         <View
           style={{
+            flex: 1,
             width: width * 0.75,
             height: width / 2,
             borderRadius: 20,
             borderWidth: 0,
-            justifyContent: "center",
             backgroundColor: "white",
             shadowColor: "#000",
             shadowOffset: { width: 0, height: 6 },
             shadowOpacity: 0.1,
             shadowRadius: 3.84,
             elevation: 5,
+            //overflow: "hidden",
           }}
         >
           {data === undefined ? (
-            <Text style={{ textAlign: "center", fontSize: 30 }}>
+            <Text style={{ textAlign: "center", fontSize: 30, paddingTop: 70 }}>
               gregarious{index}
             </Text>
           ) : (
-            <View>
-              <Text style={{ textAlign: "center", fontSize: 30 }}>
-                {item.name}
-              </Text>
-            </View>
+            <Pressable
+              onPress={
+                () =>
+                  router.push({
+                    pathname: "/store/:restaurant",
+                    params: { restaurant: item.name },
+                  })
+                //router.push("/store/test")
+              }
+              style={{ flex: 1 }}
+            >
+              <View style={{ flex: 1 }}>
+                <Image
+                  source={require("../../assets/images/sushi/mainSushi.jpg")}
+                  style={{
+                    width: "100%",
+                    height: width / 4,
+                    borderTopLeftRadius: 20,
+                    borderTopRightRadius: 20,
+                  }}
+                />
+                <View
+                  style={{
+                    flex: 1,
+                    //backgroundColor: "pink",
+                    borderBottomLeftRadius: 20,
+                    borderBottomRightRadius: 20,
+                    paddingTop: 6,
+                    paddingLeft: 20,
+                  }}
+                >
+                  {/* RESTAURANT TITLE AND RATING */}
+                  <View style={{ flexDirection: "row", paddingBottom: 4 }}>
+                    <Text
+                      style={{
+                        fontSize: 22,
+                        fontWeight: "bold",
+                        color: "#CE3535",
+                      }}
+                    >
+                      {item.name}
+                    </Text>
+                  </View>
+                  {/* RESTAURANT INFO */}
+                  <View>
+                    <View style={{ flexDirection: "row", paddingBottom: 8 }}>
+                      <MaterialIcons
+                        name="hourglass-empty"
+                        size={16}
+                        color="#8c8c8c"
+                      />
+                      <Text style={{ color: "#8c8c8c" }}>{item.awaitTime}</Text>
+                      <View style={{ width: 20 }}></View>
+                      <MaterialCommunityIcons
+                        name="currency-usd"
+                        size={16}
+                        color="#8c8c8c"
+                      />
+                      <Text style={{ color: "#8c8c8c" }}>
+                        {" "}
+                        {item.priceRange}
+                      </Text>
+                    </View>
+                    <View style={{ flexDirection: "row" }}>
+                      {item.tags
+                        .slice(0, 3)
+                        .map((tag: string, index: number) => (
+                          <View
+                            style={{
+                              backgroundColor: "#f0f0f0",
+                              marginRight: 10,
+                              paddingLeft: 10,
+                              paddingRight: 10,
+                              paddingTop: 3,
+                              paddingBottom: 3,
+                              borderRadius: 10,
+                            }}
+                            key={index}
+                          >
+                            <Text>{tag}</Text>
+                          </View>
+                        ))}
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </Pressable>
           )}
         </View>
       )}
@@ -83,7 +171,7 @@ function MyShowcase({ title, data }: { title: string; data?: any }) {
 
 export default function TabOneScreen() {
   const [restaurants, setRestaurants] = useState(sampleRestaurants);
-  console.log("restaurants", restaurants);
+  //console.log("restaurants", restaurants);
   return (
     <>
       <StatusBar barStyle="dark-content" />

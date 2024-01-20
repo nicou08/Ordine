@@ -6,7 +6,7 @@ export const sampleRestaurants = [
     phone: "123-456-7890",
     website: "megaSushi72.ca",
     priceRange: "$$",
-    awaitTime: "15- 25 min",
+    awaitTime: "15~25 min",
     distanceAway: "24 min",
     tags: [
       "Sushi",
