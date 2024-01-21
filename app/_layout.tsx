@@ -14,6 +14,7 @@ import {
 } from "expo-router";
 import SignHeader from "../components/headers/SignHeader";
 import RestaurantHeader from "../components/headers/RestaurantHeader";
+import SettingsHeader from "../components/headers/SettingsHeader";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -80,7 +81,6 @@ function RootLayoutNav() {
       {session != null && session.user ? (
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-
           <Stack.Screen
             name="(screens)/store/[restaurant]"
             options={{
@@ -88,9 +88,9 @@ function RootLayoutNav() {
             }}
           />
           <Stack.Screen
-            name="(screens)/store/test"
+            name="(screens)/settings/index"
             options={{
-              header: () => <RestaurantHeader />,
+              header: () => <SettingsHeader />,
             }}
           />
         </Stack>

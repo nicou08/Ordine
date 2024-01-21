@@ -78,7 +78,9 @@ function MyCarousel({ data }: { data?: any }) {
                     paddingLeft: 20,
                   }}
                 >
-                  {/* RESTAURANT TITLE AND RATING */}
+                  {/*****************************************/}
+                  {/****** RESTAURANT TITLE AND RATING ******/}
+                  {/*****************************************/}
                   <View style={{ flexDirection: "row", paddingBottom: 4 }}>
                     <Text
                       style={{
@@ -90,7 +92,9 @@ function MyCarousel({ data }: { data?: any }) {
                       {item.name}
                     </Text>
                   </View>
-                  {/* RESTAURANT INFO */}
+                  {/*****************************/}
+                  {/****** RESTAURANT INFO ******/}
+                  {/*****************************/}
                   <View>
                     <View style={{ flexDirection: "row", paddingBottom: 8 }}>
                       <MaterialIcons
@@ -106,10 +110,12 @@ function MyCarousel({ data }: { data?: any }) {
                         color="#8c8c8c"
                       />
                       <Text style={{ color: "#8c8c8c" }}>
-                        {" "}
                         {item.priceRange}
                       </Text>
                     </View>
+                    {/******************/}
+                    {/****** TAGS ******/}
+                    {/******************/}
                     <View style={{ flexDirection: "row" }}>
                       {item.tags
                         .slice(0, 3)

@@ -1,3 +1,4 @@
+import React from "react";
 import {
   AntDesign,
   MaterialCommunityIcons,
@@ -11,7 +12,7 @@ import { Pressable, useColorScheme } from "react-native";
 
 import Colors from "../../constants/Colors";
 import HomeSearchHeader from "../../components/headers/HomeSearchHeader";
-import React from "react";
+import AccountHeader from "../../components/headers/AccountHeader";
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -97,6 +98,7 @@ export default function TabLayout() {
               color={color}
             />
           ),
+          header: () => <AccountHeader />,
         }}
       />
     </Tabs>
