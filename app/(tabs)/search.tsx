@@ -4,7 +4,14 @@ export default function SearchScreen() {
   return (
     <>
       <StatusBar barStyle="dark-content" />
-      <View style={styles.container}>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "white",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <Text style={styles.title}>THIS IS SEARCH SCREENn</Text>
         <View style={styles.separator} />
       </View>

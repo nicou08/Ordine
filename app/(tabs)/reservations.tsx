@@ -2,8 +2,15 @@ import { StyleSheet, Text, View } from "react-native";
 
 export default function ReservationsScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>This is reserve screen</Text>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: "white",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <Text style={styles.title}>This is reservation screen</Text>
       <View style={styles.separator} />
     </View>
   );

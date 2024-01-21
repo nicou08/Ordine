@@ -1,9 +1,16 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { supabase } from "../../utils/supabase";
 
-export default function ReserveScreen() {
+export default function AccountScreen() {
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: "white",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       <Text style={styles.title}>ACCOUNT</Text>
       <View style={styles.separator} />
       <TouchableOpacity

@@ -14,6 +14,7 @@ export default function AccountHeader() {
   return (
     <View
       style={{
+        backgroundColor: "white",
         height: height * 0.4,
         shadowColor: "#000",
         shadowOffset: {
@@ -28,7 +29,7 @@ export default function AccountHeader() {
       <View
         style={{
           flex: 1,
-          backgroundColor: "lightsteelblue",
+          backgroundColor: "white",
           paddingTop: 60,
           paddingLeft: 20,
           paddingRight: 20,

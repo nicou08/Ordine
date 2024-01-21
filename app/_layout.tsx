@@ -90,8 +90,42 @@ function RootLayoutNav() {
           <Stack.Screen
             name="(screens)/settings/index"
             options={{
-              header: () => <SettingsHeader />,
+              header: () => <SettingsHeader title="Settings" />,
             }}
+          />
+          <Stack.Screen
+            name="(screens)/settings/Preferences"
+            options={{
+              header: () => <SettingsHeader title="Preferences" />,
+            }}
+          />
+          <Stack.Screen
+            name="(screens)/settings/Security"
+            options={{
+              header: () => <SettingsHeader title="Security" />,
+            }}
+          />
+          <Stack.Screen
+            name="(screens)/settings/TermsOfUse"
+            options={{
+              header: () => <SettingsHeader title="Terms of Use" />,
+            }}
+          />
+          <Stack.Screen
+            name="(screens)/settings/Privacy"
+            options={{
+              header: () => <SettingsHeader title="Privacy" />,
+            }}
+          />
+          <Stack.Screen
+            name="(screens)/settings/HelpCenter"
+            options={{
+              header: () => <SettingsHeader title="Help Center" />,
+            }}
+          />
+          <Stack.Screen
+            name="SignOutModal"
+            options={{ presentation: "modal" }}
           />
         </Stack>
       ) : (
