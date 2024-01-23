@@ -13,6 +13,7 @@ import { Pressable, useColorScheme } from "react-native";
 import Colors from "../../constants/Colors";
 import HomeSearchHeader from "../../components/headers/HomeSearchHeader";
 import AccountHeader from "../../components/headers/AccountHeader";
+import ReservationHeader from "../../components/headers/ReservationHeader";
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -85,6 +86,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <AntDesign name="calendar" size={24} color={color} />
           ),
+          header: () => <ReservationHeader />,
         }}
       />
       <Tabs.Screen
