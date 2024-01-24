@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dimensions,
-  TouchableOpacity,
   Pressable,
   StatusBar,
   ScrollView,
@@ -10,7 +9,7 @@ import {
   FlatList,
   Image,
 } from "react-native";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { supabase } from "../../utils/supabase";
@@ -52,7 +51,7 @@ function MyCarousel({ data }: { data?: any }) {
                 () =>
                   router.push({
                     pathname: "/store/:restaurant",
-                    params: { restaurant: item.name },
+                    params: { restaurant: item.id },
                   })
                 //router.push("/store/test")
               }
@@ -60,7 +59,7 @@ function MyCarousel({ data }: { data?: any }) {
             >
               <View style={{ flex: 1 }}>
                 <Image
-                  source={require("../../assets/images/sushi/mainSushi.jpg")}
+                  source={{ uri: item.restaurant_image }}
                   style={{
                     width: "100%",
                     height: width / 4,
@@ -71,11 +70,12 @@ function MyCarousel({ data }: { data?: any }) {
                 <View
                   style={{
                     flex: 1,
-                    //backgroundColor: "pink",
+                    backgroundColor: "white",
                     borderBottomLeftRadius: 20,
                     borderBottomRightRadius: 20,
                     paddingTop: 6,
                     paddingLeft: 20,
+                    paddingRight: 20,
                   }}
                 >
                   {/*****************************************/}
@@ -102,7 +102,7 @@ function MyCarousel({ data }: { data?: any }) {
                         size={16}
                         color="#8c8c8c"
                       />
-                      <Text style={{ color: "#8c8c8c" }}>{item.awaitTime}</Text>
+                      <Text style={{ color: "#8c8c8c" }}>{item.wait_time}</Text>
                       <View style={{ width: 20 }}></View>
                       <MaterialCommunityIcons
                         name="currency-usd"
@@ -110,31 +110,45 @@ function MyCarousel({ data }: { data?: any }) {
                         color="#8c8c8c"
                       />
                       <Text style={{ color: "#8c8c8c" }}>
-                        {item.priceRange}
+                        {item.price_range}
                       </Text>
                     </View>
                     {/******************/}
                     {/****** TAGS ******/}
                     {/******************/}
-                    <View style={{ flexDirection: "row" }}>
-                      {item.tags
-                        .slice(0, 3)
-                        .map((tag: string, index: number) => (
-                          <View
-                            style={{
-                              backgroundColor: "#f0f0f0",
-                              marginRight: 10,
-                              paddingLeft: 10,
-                              paddingRight: 10,
-                              paddingTop: 3,
-                              paddingBottom: 3,
-                              borderRadius: 10,
-                            }}
-                            key={index}
-                          >
-                            <Text>{tag}</Text>
-                          </View>
-                        ))}
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        //backgroundColor: "lightcyan",
+                        overflow: "hidden",
+                      }}
+                    >
+                      {(() => {
+                        let totalLength = 0;
+                        const maxTotalLength = 22;
+                        return item.tags
+                          .slice(0, 3)
+                          .filter((tag: string) => {
+                            totalLength += tag.length;
+                            return totalLength <= maxTotalLength;
+                          })
+                          .map((tag: string, index: number) => (
+                            <View
+                              style={{
+                                backgroundColor: "#f0f0f0",
+                                marginRight: 10,
+                                paddingLeft: 10,
+                                paddingRight: 10,
+                                paddingTop: 3,
+                                paddingBottom: 3,
+                                borderRadius: 10,
+                              }}
+                              key={index}
+                            >
+                              <Text>{tag}</Text>
+                            </View>
+                          ));
+                      })()}
                     </View>
                   </View>
                 </View>
@@ -174,10 +188,79 @@ function MyShowcase({ title, data }: { title: string; data?: any }) {
     </View>
   );
 }
+/********************************/
+// Get restaurants from database
+/********************************/
+async function fetchRestaurants() {
+  let { data, error } = await supabase
+    .from("Restaurant Table")
+    .select("id,name,restaurant_image,tags,wait_time,price_range,status");
 
-export default function TabOneScreen() {
-  const [restaurants, setRestaurants] = useState(sampleRestaurants);
-  //console.log("restaurants", restaurants);
+  if (error) {
+    console.log("error", error);
+    return null; // or return [];
+  } else {
+    //console.log(JSON.stringify(data, null, 2));
+    console.log("HOME DaTA", data);
+    return data;
+  }
+}
+
+export default function HomeScreen() {
+  const [restaurants, setRestaurants] = useState<any[]>([]);
+  const [restaurantss, setRestaurantss] = useState(sampleRestaurants);
+
+  const [trendingRestaurants, setTrendingRestaurants] = useState<any[]>([]);
+  const [favouriteRestaurants, setFavouriteRestaurants] = useState<any[]>([]);
+  const [seaFoodRestaurants, setSeaFoodRestaurants] = useState<any[]>([]);
+  const [chickenRestaurants, setChickenRestaurants] = useState<any[]>([]);
+  const [meatRestaurants, setMeatRestaurants] = useState<any[]>([]);
+  const [japaneseRestaurants, setJapaneseRestaurants] = useState<any[]>([]);
+
+  // Get restaurants from database
+  useEffect(() => {
+    fetchRestaurants().then((data) => {
+      if (data) {
+        setRestaurants(data);
+
+        /**********************************/
+        /********* Make carousels *********/
+        /**********************************/
+
+        // Trending restaurants
+        const trending = data.filter(
+          (restaurant) => restaurant.status === "Trending"
+        );
+        setTrendingRestaurants(trending);
+        //console.log("TRENDING", trending);
+
+        // Seafood restaurants
+        const seaFood = restaurants.filter((restaurant) =>
+          restaurant.tags.includes("Sea Food")
+        );
+        setSeaFoodRestaurants(seaFood);
+
+        // Meat restaurants
+        const meat = restaurants.filter((restaurant) =>
+          restaurant.tags.includes("Beef")
+        );
+        setMeatRestaurants(meat);
+
+        // Chicken restaurants
+        const chicken = restaurants.filter((restaurant) =>
+          restaurant.tags.includes("Chicken")
+        );
+        setChickenRestaurants(chicken);
+
+        // Japanese restaurants
+        const japanese = restaurants.filter((restaurant) =>
+          restaurant.tags.includes("Japanese")
+        );
+        setJapaneseRestaurants(japanese);
+      }
+    });
+  }, []);
+
   return (
     <>
       <StatusBar barStyle="dark-content" />
@@ -185,13 +268,15 @@ export default function TabOneScreen() {
         contentContainerStyle={{
           paddingTop: 20,
           //paddingBottom: 20,
+          backgroundColor: "white",
         }}
         style={{ flex: 1, backgroundColor: "white" }}
       >
-        <MyShowcase title="Trending" data={restaurants} />
-        <MyShowcase title="Favourites" />
-        <MyShowcase title="Japanese" />
-        <MyShowcase title="EL GRAN PACHON" />
+        <MyShowcase title="EL GRAN PACHONASO" data={trendingRestaurants} />
+        <MyShowcase title="Sea Food" data={seaFoodRestaurants} />
+        <MyShowcase title="Meat" data={meatRestaurants} />
+        <MyShowcase title="Chicken" data={chickenRestaurants} />
+        <MyShowcase title="Japanese" data={japaneseRestaurants} />
       </ScrollView>
     </>
   );
