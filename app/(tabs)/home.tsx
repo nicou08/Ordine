@@ -201,7 +201,7 @@ async function fetchRestaurants() {
     return null; // or return [];
   } else {
     //console.log(JSON.stringify(data, null, 2));
-    console.log("HOME DaTA", data);
+    console.log("HOME DaaTA", data);
     return data;
   }
 }
@@ -235,25 +235,25 @@ export default function HomeScreen() {
         //console.log("TRENDING", trending);
 
         // Seafood restaurants
-        const seaFood = restaurants.filter((restaurant) =>
+        const seaFood = data.filter((restaurant) =>
           restaurant.tags.includes("Sea Food")
         );
         setSeaFoodRestaurants(seaFood);
 
         // Meat restaurants
-        const meat = restaurants.filter((restaurant) =>
+        const meat = data.filter((restaurant) =>
           restaurant.tags.includes("Beef")
         );
         setMeatRestaurants(meat);
 
         // Chicken restaurants
-        const chicken = restaurants.filter((restaurant) =>
+        const chicken = data.filter((restaurant) =>
           restaurant.tags.includes("Chicken")
         );
         setChickenRestaurants(chicken);
 
         // Japanese restaurants
-        const japanese = restaurants.filter((restaurant) =>
+        const japanese = data.filter((restaurant) =>
           restaurant.tags.includes("Japanese")
         );
         setJapaneseRestaurants(japanese);

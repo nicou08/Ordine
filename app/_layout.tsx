@@ -15,6 +15,7 @@ import {
 import SignHeader from "../components/headers/SignHeader";
 import RestaurantHeader from "../components/headers/RestaurantHeader";
 import SettingsHeader from "../components/headers/SettingsHeader";
+import ReservingHeader from "../components/headers/ReservingHeader";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -85,6 +86,12 @@ function RootLayoutNav() {
             name="(screens)/store/[restaurant]"
             options={{
               header: () => <RestaurantHeader />,
+            }}
+          />
+          <Stack.Screen
+            name="(screens)/reserving/index"
+            options={{
+              header: () => <ReservingHeader title="Reserving" />,
             }}
           />
           <Stack.Screen
