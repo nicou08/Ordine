@@ -10,8 +10,9 @@ import {
   TextInput,
 } from "react-native";
 import { AntDesign, Entypo } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { supabase } from "../../../utils/supabase";
+import { Session } from "@supabase/supabase-js";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Carousel from "react-native-reanimated-carousel";
@@ -51,7 +52,70 @@ function RightArrow() {
   );
 }
 
+/****************************************/
+// Upload reservation to database
+/****************************************/
+async function makeReservation({
+  restaurantID,
+  userID,
+  date,
+  time,
+  people,
+  seatPreference,
+}: {
+  restaurantID: string;
+  userID: string;
+  date: string;
+  time: string;
+  people: number;
+  seatPreference: string;
+}) {
+  console.log(
+    "RECEIVED DATA",
+    date,
+    time,
+    people,
+    seatPreference,
+    restaurantID
+  );
+
+  const { data, error } = await supabase.from("Reservation Table").insert([
+    {
+      restaurant: restaurantID,
+      user_id: userID,
+      date: date,
+      time: time,
+      participants: people,
+      seat_preference: seatPreference,
+    },
+  ]);
+
+  if (error) {
+    console.log("error", error);
+    return null;
+  } else {
+    console.log("RESERVATION DATA", data);
+    router.replace("/reservations");
+    return data;
+  }
+}
+
 export default function ReservingScreen() {
+  const searchParams = useLocalSearchParams();
+
+  const [session, setSession] = useState<Session | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+  }, []);
+  console.log("SESSIONID", session?.user?.id);
+
   // Modals
   const [modalCalendarVisible, setModalCalendarVisible] = useState(false);
   const [modalTimeVisible, setModalTimeVisible] = useState(false);
@@ -329,6 +393,16 @@ export default function ReservingScreen() {
         }}
       >
         <Pressable
+          onPress={() => {
+            makeReservation({
+              restaurantID: searchParams.restaurantID as string,
+              userID: session?.user?.id as string,
+              date: reservationDate,
+              time: reservationTime,
+              people: reservationPeople,
+              seatPreference: reservationSeatPreference,
+            });
+          }}
           style={{
             backgroundColor: "#CE3535",
             height: 40,
@@ -819,7 +893,7 @@ export default function ReservingScreen() {
                 {numberPeople.map((number, index) => (
                   <Pressable
                     onPress={() => setActivePeopleIndex(index)}
-                    key={number}
+                    key={index}
                     style={{
                       backgroundColor:
                         activePeopleIndex === index ? "#CE3535" : "white",
@@ -919,10 +993,10 @@ export default function ReservingScreen() {
               }}
             >
               {seatsPreferences.map((seat, index) => (
-                <>
+                <View key={index}>
                   <Pressable
                     onPress={() => setActivePreferenceIndex(index)}
-                    key={seat}
+                    key={index}
                     style={{
                       backgroundColor:
                         activePreferenceIndex === index ? "#CE3535" : "white",
@@ -944,7 +1018,7 @@ export default function ReservingScreen() {
                     </Text>
                   </Pressable>
                   <View style={{ height: 5 }}></View>
-                </>
+                </View>
               ))}
             </View>
           </View>

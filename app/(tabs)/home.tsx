@@ -201,7 +201,7 @@ async function fetchRestaurants() {
     return null; // or return [];
   } else {
     //console.log(JSON.stringify(data, null, 2));
-    console.log("HOME DaaTA", data);
+    //console.log("HOME DaaTA", data);
     return data;
   }
 }
