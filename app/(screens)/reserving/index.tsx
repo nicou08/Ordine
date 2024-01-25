@@ -114,7 +114,7 @@ export default function ReservingScreen() {
       setSession(session);
     });
   }, []);
-  console.log("SESSIONID", session?.user?.id);
+  //console.log("SESSIONID", session?.user?.id);
 
   // Modals
   const [modalCalendarVisible, setModalCalendarVisible] = useState(false);

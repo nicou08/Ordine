@@ -165,7 +165,7 @@ function MyCarousel({ data }: { data?: any }) {
       }}
       style={{
         flex: 1,
-        //backgroundColor: "magenta",
+        backgroundColor: "#f5f5f5",
       }}
     />
   );
@@ -173,7 +173,7 @@ function MyCarousel({ data }: { data?: any }) {
 
 function MyShowcase({ title, data }: { title: string; data?: any }) {
   return (
-    <View>
+    <View style={{ backgroundColor: "#f5f5f5" }}>
       <Text
         style={{
           paddingLeft: 20,
@@ -268,9 +268,9 @@ export default function HomeScreen() {
         contentContainerStyle={{
           paddingTop: 20,
           //paddingBottom: 20,
-          backgroundColor: "white",
+          backgroundColor: "#f5f5f5",
         }}
-        style={{ flex: 1, backgroundColor: "white" }}
+        style={{ flex: 1, backgroundColor: "#f5f5f5" }}
       >
         <MyShowcase title="EL GRAN PACHONASO" data={trendingRestaurants} />
         <MyShowcase title="Sea Food" data={seaFoodRestaurants} />
