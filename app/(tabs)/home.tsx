@@ -281,38 +281,3 @@ export default function HomeScreen() {
     </>
   );
 }
-
-{
-  /* <View style={{ flex: 1 }}>
-          <Carousel
-            loop={false}
-            width={width}
-            height={width / 2}
-            autoPlay={false}
-            enabled={true}
-            defaultIndex={4}
-            pagingEnabled={false}
-            snapEnabled={false}
-            data={[...new Array(6).keys()]}
-            scrollAnimationDuration={1000}
-            onSnapToItem={(index) => console.log("current index:", index)}
-            renderItem={({ index }) => (
-              <View
-                style={{
-                  flex: 1,
-                  width: width * 0.6,
-                  marginLeft: 20,
-                  marginRight: 20,
-                  borderWidth: 1,
-                  justifyContent: "center",
-                  backgroundColor: "pink",
-                }}
-              >
-                <Text style={{ textAlign: "center", fontSize: 30 }}>
-                  {index}
-                </Text>
-              </View>
-            )}
-          />
-        </View> */
-}

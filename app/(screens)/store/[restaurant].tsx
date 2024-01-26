@@ -458,14 +458,15 @@ export default function RestaurantScreen() {
               </View>
             </Pressable>
           </View>
-          <Text style={{ paddingTop: 40 }}>Welcome! {pathname} </Text>
+          <View style={{ height: 140 }}></View>
+          {/* <Text style={{ paddingTop: 40 }}>Welcome! {pathname} </Text>
           <Text>
             searchParams: {searchParams.restaurant} type:{" "}
             {typeof searchParams.restaurant}{" "}
           </Text>
           <Text style={{ paddingBottom: 100 }}>
             globalSearchParams: {globalSearchParams}{" "}
-          </Text>
+          </Text> */}
         </View>
       </ScrollView>
       <View

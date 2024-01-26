@@ -95,6 +95,18 @@ function RootLayoutNav() {
             }}
           />
           <Stack.Screen
+            name="(screens)/reservations/[reservation]"
+            options={{
+              header: () => <ReservingHeader title="Reservation" />,
+            }}
+          />
+          <Stack.Screen
+            name="(screens)/reserving/updateReservation"
+            options={{
+              header: () => <ReservingHeader title="Updating Reservation" />,
+            }}
+          />
+          <Stack.Screen
             name="(screens)/settings/index"
             options={{
               header: () => <SettingsHeader title="Settings" />,

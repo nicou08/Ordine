@@ -23,7 +23,7 @@ async function fetchRestaurantInfo({
 }) {
   let { data, error } = await supabase
     .from("Restaurant Table")
-    .select("name,address")
+    .select("name,address,distance_away")
     .eq("id", restaurant_id);
   if (error) {
     console.log("error", error);
@@ -56,7 +56,8 @@ function ReservationItem({ reservation }: { reservation: any }) {
   const [restaurantInfo, setRestaurantInfo] = useState<{
     name: string;
     address: string;
-  }>({ name: "", address: "" });
+    distance_away: string;
+  }>({ name: "", address: "", distance_away: "" });
   const [reservationDate, setReservationDate] = useState<string>("");
 
   // Get restaurant info
@@ -64,18 +65,22 @@ function ReservationItem({ reservation }: { reservation: any }) {
     fetchRestaurantInfo({ restaurant_id: reservation?.restaurant }).then(
       (data) => {
         if (data) {
-          console.log("RESTAURANT INFO", data[0]);
-          setRestaurantInfo({ name: data[0].name, address: data[0].address });
+          //console.log("RESTAURANT INFO", data[0]);
+          setRestaurantInfo({
+            name: data[0].name,
+            address: data[0].address,
+            distance_away: data[0].distance_away,
+          });
         }
       }
     );
   }, []);
-  console.log("RESERVATION ITEM", reservation?.restaurant);
+  //console.log("RESERVATION ITEM", reservation?.restaurant);
 
   // Format date
   useEffect(() => {
     if (reservation?.date) {
-      const date = new Date(reservation?.date);
+      const date = new Date(reservation?.date + "T00:00");
       const formattedDate = date.toLocaleDateString("en-US", {
         year: "numeric",
         month: "long",
@@ -87,6 +92,18 @@ function ReservationItem({ reservation }: { reservation: any }) {
 
   return (
     <TouchableOpacity
+      onPress={() =>
+        router.push({
+          pathname: "/reservations/:reservation_id",
+          params: {
+            reservation_id: reservation?.id,
+            restaurantID: reservation?.restaurant,
+            name: restaurantInfo.name,
+            location: restaurantInfo.address,
+            distance: restaurantInfo.distance_away,
+          },
+        })
+      }
       style={{
         backgroundColor: "white",
         shadowColor: "#000",
@@ -151,7 +168,7 @@ export default function ReservationsScreen() {
       fetchReservations({ user_id: session?.user?.id }).then((data: any) => {
         if (data) {
           setReservations(data);
-          console.log("RESERVATIONS", data);
+          //console.log("RESERVATIONS", data);
         }
       });
     }

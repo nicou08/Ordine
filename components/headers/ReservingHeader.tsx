@@ -14,7 +14,7 @@ import {
 
 export default function ReservingHeader({ title }: { title: string }) {
   const searchParams = useLocalSearchParams();
-  console.log("RESERVING HEADER PARAMS", searchParams);
+  //console.log("RESERVING HEADER PARAMS", searchParams);
 
   return (
     <View
