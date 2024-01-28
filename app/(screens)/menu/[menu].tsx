@@ -248,7 +248,11 @@ function MenuCategory({
 function MenuItem({ menuItem }: MenuItemProps) {
   const [modalVisible, setModalVisible] = useState(false);
 
-  //console.log("menuItem", menuItem);
+  const searchParams = useLocalSearchParams();
+
+  const handleAddToCart = () => {
+    console.log("ADD TO CART");
+  };
 
   return (
     <View style={{ overflow: "hidden" }}>
@@ -293,6 +297,10 @@ function MenuItem({ menuItem }: MenuItemProps) {
         </View>
       </Pressable>
       <View style={{ height: 20 }}></View>
+
+      {/*********************************************************/}
+      {/******************** MENU ITEM MODAL ********************/}
+      {/*********************************************************/}
       <Modal
         animationType="fade"
         transparent={true}
@@ -339,9 +347,11 @@ function MenuItem({ menuItem }: MenuItemProps) {
               >
                 Notice
               </Text>
-              {menuItem.notice.map((item, index) => (
-                <Text key={index}>{item}</Text>
-              ))}
+              {Array.isArray(menuItem.notice)
+                ? menuItem.notice.map((item, index) => (
+                    <Text key={index}>{item}</Text>
+                  ))
+                : null}
               <View style={{ height: 17 }}></View>
               <Text
                 style={{ fontWeight: "bold", fontSize: 17, paddingBottom: 7 }}
@@ -373,25 +383,38 @@ function MenuItem({ menuItem }: MenuItemProps) {
               >
                 <AntDesign name="close" size={24} color="black" />
               </Pressable>
-              <View style={{ width: 10 }}></View>
-              <Pressable
-                style={{
-                  marginRight: 10,
-                  backgroundColor: "#CE3535",
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingLeft: 30,
-                  paddingRight: 30,
-                  borderRadius: 50,
-                }}
-                onPress={() => setModalVisible(false)}
-              >
-                <Text
-                  style={{ fontSize: 20, color: "white", fontWeight: "500" }}
+
+              {searchParams.reservation_id != null ? (
+                <View
+                  style={{
+                    flexDirection: "row",
+                  }}
                 >
-                  Add
-                </Text>
-              </Pressable>
+                  <View style={{ width: 10 }}></View>
+                  <Pressable
+                    style={{
+                      marginRight: 10,
+                      backgroundColor: "#CE3535",
+                      paddingTop: 10,
+                      paddingBottom: 10,
+                      paddingLeft: 30,
+                      paddingRight: 30,
+                      borderRadius: 50,
+                    }}
+                    onPress={() => handleAddToCart()}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 20,
+                        color: "white",
+                        fontWeight: "500",
+                      }}
+                    >
+                      Add
+                    </Text>
+                  </Pressable>
+                </View>
+              ) : null}
             </View>
           </View>
         </View>

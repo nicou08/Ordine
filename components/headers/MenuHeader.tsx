@@ -8,6 +8,7 @@ import { CartContext } from "../../context/CartContext";
 
 export default function MenuHeader() {
   const searchParams = useLocalSearchParams();
+  console.log("DONKEY", searchParams.reservation_id);
 
   const scrollViewRef = useContext(MenuScrollContext);
 
@@ -106,9 +107,13 @@ export default function MenuHeader() {
           <Text style={{ fontSize: 19, fontWeight: "bold", paddingTop: 4 }}>
             Menu
           </Text>
-          <View style={{ width: 30 }}>
-            <Text style={{ fontSize: 25 }}>{cartItems}</Text>
-          </View>
+          {searchParams.reservation_id != null ? (
+            <View style={{ width: 30 }}>
+              <Text style={{ fontSize: 25 }}>{cartItems}</Text>
+            </View>
+          ) : (
+            <View style={{ width: 30 }}></View>
+          )}
         </View>
 
         {/***********************/}

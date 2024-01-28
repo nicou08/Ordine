@@ -274,7 +274,17 @@ export default function ReservationScreen() {
           <Ionicons name="pencil" size={20} color="black" />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => console.log("Pre order pressed!")}
+          onPress={() =>
+            router.push({
+              pathname: "/menu/:menu",
+              params: {
+                menu: searchParams.restaurantID,
+                name: searchParams.name,
+                location: searchParams.location,
+                reservation_id: searchParams.reservation_id,
+              },
+            })
+          }
           style={{
             backgroundColor: "#CE3535",
             height: 40,

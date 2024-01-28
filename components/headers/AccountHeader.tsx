@@ -1,15 +1,97 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Pressable, Dimensions, Image } from "react-native";
 import { router } from "expo-router";
 import { Ionicons, Octicons } from "@expo/vector-icons";
+import { supabase } from "../../utils/supabase";
+import { Session } from "@supabase/supabase-js";
 
 const { width, height } = Dimensions.get("window");
 
+/*****************/
+// Fetch user info
+/*****************/
+async function fetchUserInfo({ user_id }: { user_id: string }) {
+  const { data, error } = await supabase
+    .from("Profile Table")
+    .select("name,phone,location")
+    .eq("id", user_id)
+    .single();
+  if (error) {
+    console.log("Account Fetch Error: ", error);
+    return null;
+  } else {
+    return data;
+  }
+}
+
+/*****************************************/
+// Get number of reservations from user ID
+/*****************************************/
+async function fetchNumberReservations({ user_id }: { user_id: string }) {
+  const { data, error, count } = await supabase
+    .from("Reservation Table")
+    .select("user_id", { count: "exact" })
+    .eq("user_id", user_id);
+
+  if (error) {
+    console.log("Error fetching reservations count: ", error);
+    return null;
+  } else {
+    return count;
+  }
+}
+
 export default function AccountHeader() {
-  const [name, setName] = useState<string>("John Doe");
-  const [location, setLocation] = useState<string>("New York, NY");
-  const [numberFavorites, setNumberFavorites] = useState<number>(0);
-  const [numberReservations, setReservations] = useState<number>(0);
+  // Get session
+  const [session, setSession] = useState<Session | null>(null);
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+  }, []);
+
+  // Fetch User Info
+  interface UserInfo {
+    name: string;
+    phone: string;
+    location: string;
+  }
+  const [userInfo, setUserInfo] = useState<UserInfo>({
+    name: "",
+    phone: "",
+    location: "",
+  });
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetchUserInfo({ user_id: session.user.id }).then((data) => {
+        if (data) {
+          setUserInfo({
+            name: data.name,
+            phone: data.phone,
+            location: data.location,
+          });
+        }
+      });
+    }
+  }, [session]);
+
+  // Fetch number of reservations
+  const [numberReservations, setNumberReservations] = useState<number>(0);
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetchNumberReservations({ user_id: session.user.id }).then((data) => {
+        if (data) {
+          //console.log("NUMBER OF RESERVATIONS", data);
+          setNumberReservations(data);
+        }
+      });
+    }
+  }, [session]);
 
   return (
     <View
@@ -69,12 +151,12 @@ export default function AccountHeader() {
               paddingTop: 10,
             }}
           >
-            John Smith
+            {userInfo.name}
           </Text>
           <View style={{ flexDirection: "row" }}>
             <Ionicons name="location-outline" size={16} color="black" />
             <Text style={{ paddingLeft: 5, color: "black" }}>
-              123 Fake Street, Fake City
+              {userInfo.location}
             </Text>
           </View>
           <View
@@ -91,7 +173,9 @@ export default function AccountHeader() {
               <Text>Favourites</Text>
             </View>
             <View style={{ alignItems: "center" }}>
-              <Text style={{ fontSize: 30, fontWeight: "600" }}>3</Text>
+              <Text style={{ fontSize: 30, fontWeight: "600" }}>
+                {numberReservations}
+              </Text>
               <Text>Reservations</Text>
             </View>
           </View>

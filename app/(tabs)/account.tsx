@@ -1,9 +1,67 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Text, View, Dimensions, TextInput } from "react-native";
+import { supabase } from "../../utils/supabase";
+import { Session } from "@supabase/supabase-js";
 
 const { width, height } = Dimensions.get("window");
 
+/*****************/
+// Fetch user info
+/*****************/
+async function fetchUserInfo({ user_id }: { user_id: string }) {
+  const { data, error } = await supabase
+    .from("Profile Table")
+    .select("name,phone,location")
+    .eq("id", user_id)
+    .single();
+  if (error) {
+    console.log("Account Fetch Error: ", error);
+    return null;
+  } else {
+    return data;
+  }
+}
+
 export default function AccountScreen() {
+  // Get session
+  const [session, setSession] = useState<Session | null>(null);
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+  }, []);
+
+  // Fetch User Info
+  interface UserInfo {
+    name: string;
+    phone: string;
+    location: string;
+  }
+  const [userInfo, setUserInfo] = useState<UserInfo>({
+    name: "",
+    phone: "",
+    location: "",
+  });
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetchUserInfo({ user_id: session.user.id }).then((data) => {
+        if (data) {
+          //console.log("Account Fetch Data: ", data);
+          setUserInfo({
+            name: data.name,
+            phone: data.phone,
+            location: data.location,
+          });
+        }
+      });
+    }
+  }, [session]);
+
   const [email, setEmail] = useState<string>("");
   return (
     <View
@@ -42,7 +100,7 @@ export default function AccountScreen() {
             color: "gray",
           }}
         >
-          johnsmith24@gmail.com
+          {session?.user?.email}
         </Text>
       </View>
       <View
@@ -104,7 +162,7 @@ export default function AccountScreen() {
             color: "gray",
           }}
         >
-          +1 (123) 456-7890
+          +1 {userInfo.phone}
         </Text>
       </View>
     </View>
