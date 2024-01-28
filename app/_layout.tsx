@@ -1,21 +1,16 @@
 import "react-native-url-polyfill/auto";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFonts } from "expo-font";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { supabase } from "../utils/supabase";
 import { Session } from "@supabase/supabase-js";
-
-import {
-  SplashScreen,
-  Stack,
-  router,
-  usePathname,
-  useLocalSearchParams,
-} from "expo-router";
+import { SplashScreen, Stack, router } from "expo-router";
 import SignHeader from "../components/headers/SignHeader";
 import RestaurantHeader from "../components/headers/RestaurantHeader";
 import SettingsHeader from "../components/headers/SettingsHeader";
 import ReservingHeader from "../components/headers/ReservingHeader";
+import MenuHeader from "../components/headers/MenuHeader";
+import { CategoryContext } from "../context/CategoryContext";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -55,8 +50,8 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
+  // Get session
   const [session, setSession] = useState<Session | null>(null);
-
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -66,9 +61,9 @@ function RootLayoutNav() {
       setSession(session);
     });
   }, []);
-
   console.log("HELLOO", session);
 
+  // Redirect to appropriate screen
   useEffect(() => {
     if (session && session.user) {
       router.replace("/(tabs)/home");
@@ -76,6 +71,11 @@ function RootLayoutNav() {
       router.replace("/(auth)/welcome");
     }
   }, [session, router]);
+
+  const categoryPositions = useContext(CategoryContext);
+  useEffect(() => {
+    console.log("ROOT CATEGORY POSITIONS", categoryPositions);
+  }, [categoryPositions]);
 
   return (
     <>
@@ -104,6 +104,15 @@ function RootLayoutNav() {
             name="(screens)/reserving/updateReservation"
             options={{
               header: () => <ReservingHeader title="Updating Reservation" />,
+            }}
+          />
+          <Stack.Screen
+            name="(screens)/menu/[menu]"
+            key={JSON.stringify(categoryPositions)}
+            options={{
+              header: () => (
+                <MenuHeader key={JSON.stringify(categoryPositions)} />
+              ),
             }}
           />
           <Stack.Screen

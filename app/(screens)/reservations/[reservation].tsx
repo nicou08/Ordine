@@ -77,7 +77,7 @@ async function fetchReservationInfo({
 
 export default function ReservationScreen() {
   const searchParams = useLocalSearchParams();
-  console.log("SEARCH PARAMS", searchParams);
+  //console.log("SEARCH PARAMS", searchParams);
 
   // Modals
   const [modalCancelVisible, setCancelModalVisible] = useState(false);
@@ -278,7 +278,7 @@ export default function ReservationScreen() {
           style={{
             backgroundColor: "#CE3535",
             height: 40,
-            width: width * 0.65,
+            width: width * 0.6,
             justifyContent: "center",
             alignItems: "center",
             borderRadius: 20,

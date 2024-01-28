@@ -82,7 +82,7 @@ async function fetchRestaurantInfo(restaurantID: string) {
     return null; // or return [];
   } else {
     //console.log(JSON.stringify(data, null, 2));
-    console.log("DATA [RESTAURANT]", data);
+    //console.log("DATA [RESTAURANT]", data);
     return data;
   }
 }
@@ -92,7 +92,6 @@ export default function RestaurantScreen() {
   const [images, setImages] = useState<string[]>([]);
   const pathname = usePathname();
   const searchParams = useLocalSearchParams();
-  const { globalSearchParams } = useGlobalSearchParams();
   //console.log("searchParams: ", searchParams.restaurant);
   //console.log("searchParamsname: ", searchParams);
 
@@ -114,15 +113,6 @@ export default function RestaurantScreen() {
       }
     });
   }, [setImages]);
-
-  // Images
-
-  useEffect(() => {
-    if (restaurantInfo) {
-      // setImages(restaurantInfo.menu[0]["Appetizers"].map((item) => item.image));
-      // console.log("IMAGES", images);
-    }
-  }, []);
 
   // Handle Heart Press
   const [heartFilled, setHeartFilled] = useState(false);
@@ -308,7 +298,7 @@ export default function RestaurantScreen() {
           {/*****************************/}
           <View
             style={{
-              backgroundColor: "white",
+              backgroundColor: "pink",
               width: width,
               flex: 1,
               alignItems: "center",
@@ -317,6 +307,16 @@ export default function RestaurantScreen() {
             }}
           >
             <Pressable
+              onPress={() =>
+                router.push({
+                  pathname: "/menu/:menu",
+                  params: {
+                    menu: restaurantInfo?.id as string,
+                    name: restaurantInfo?.name as string,
+                    location: restaurantInfo?.address as string,
+                  },
+                })
+              }
               style={{
                 backgroundColor: "white",
                 alignSelf: "flex-start",
@@ -464,9 +464,7 @@ export default function RestaurantScreen() {
             searchParams: {searchParams.restaurant} type:{" "}
             {typeof searchParams.restaurant}{" "}
           </Text>
-          <Text style={{ paddingBottom: 100 }}>
-            globalSearchParams: {globalSearchParams}{" "}
-          </Text> */}
+           */}
         </View>
       </ScrollView>
       <View
