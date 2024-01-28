@@ -1,10 +1,10 @@
 import { useRef, createContext } from "react";
 import { ScrollView } from "react-native";
 
-export const ScrollViewContext =
+export const MenuScrollContext =
   createContext<React.RefObject<ScrollView> | null>(null);
 
-export default function ScrollViewContextProvider({
+export default function MenuScrollContextProvider({
   children,
 }: {
   children: React.ReactNode;
@@ -12,8 +12,8 @@ export default function ScrollViewContextProvider({
   const scrollViewRef = useRef<ScrollView>(null);
 
   return (
-    <ScrollViewContext.Provider value={scrollViewRef}>
+    <MenuScrollContext.Provider value={scrollViewRef}>
       {children}
-    </ScrollViewContext.Provider>
+    </MenuScrollContext.Provider>
   );
 }

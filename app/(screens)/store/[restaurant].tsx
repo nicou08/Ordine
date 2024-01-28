@@ -9,26 +9,16 @@ import {
   FlatList,
   Platform,
 } from "react-native";
-import {
-  router,
-  usePathname,
-  useLocalSearchParams,
-  useGlobalSearchParams,
-} from "expo-router";
+import { router, usePathname, useLocalSearchParams } from "expo-router";
 import {
   AntDesign,
   Entypo,
-  EvilIcons,
-  Octicons,
   Ionicons,
   MaterialIcons,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { supabase } from "../../../utils/supabase";
 import Carousel from "react-native-reanimated-carousel";
-
-import { sampleRestaurants } from "../../../constants/SampleRestaurants";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 const width = Dimensions.get("window").width;
 

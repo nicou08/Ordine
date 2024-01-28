@@ -2,30 +2,42 @@ import React, { useState, useContext, useEffect } from "react";
 import { Pressable, View, Text, FlatList, Platform } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
-import { ScrollViewContext } from "../../context/ScrollViewContext";
-import { CategoryContext } from "../../context/CategoryContext";
+import { MenuScrollContext } from "../../context/MenuScrollContext";
+import { CategoryPositionContext } from "../../context/CategoryContext";
+import { CartContext } from "../../context/CartContext";
 
 export default function MenuHeader() {
   const searchParams = useLocalSearchParams();
 
-  const scrollViewRef = useContext(ScrollViewContext);
-  useEffect(() => {
-    console.log("header ScrollViewRefff", scrollViewRef);
-  }, [scrollViewRef]);
+  const scrollViewRef = useContext(MenuScrollContext);
 
-  const categoryPositions = useContext(CategoryContext);
+  const categoryPositions = useContext(CategoryPositionContext);
 
-  useEffect(() => {
-    console.log("header CATEGORY POSITIONS", categoryPositions);
-  }, [categoryPositions]);
+  const { cartItems } = useContext(CartContext);
+
+  // useEffect(() => {
+  //   console.log("header ScrollViewRefff", scrollViewRef);
+  // }, [scrollViewRef]);
+
+  // useEffect(() => {
+  //   console.log("header CATEGORY POSITIONS", categoryPositions);
+  // }, [categoryPositions]);
 
   const handleCategoryPress = (category: string) => {
-    console.log("CATEGORY", category);
-    console.log("categoryPositions", categoryPositions[category]);
-    console.log("ScrollViewRef", scrollViewRef);
-    if (scrollViewRef != null) {
+    //console.log("CATEGORY", category);
+    //console.log("handlePress ScrollViewRef", scrollViewRef);
+    if (scrollViewRef != null && categoryPositions != undefined) {
+      // console.log(
+      //   "categoryPositions",
+      //   categoryPositions.positions[
+      //     category as keyof typeof categoryPositions.positions
+      //   ]
+      // );
       const currentScrollViewRef = scrollViewRef.current;
-      const categoryPosition = categoryPositions[category];
+      const categoryPosition =
+        categoryPositions.positions[
+          category as keyof typeof categoryPositions.positions
+        ];
 
       if (currentScrollViewRef && categoryPosition != null) {
         currentScrollViewRef.scrollTo({
@@ -94,7 +106,9 @@ export default function MenuHeader() {
           <Text style={{ fontSize: 19, fontWeight: "bold", paddingTop: 4 }}>
             Menu
           </Text>
-          <View style={{ width: 30 }}></View>
+          <View style={{ width: 30 }}>
+            <Text style={{ fontSize: 25 }}>{cartItems}</Text>
+          </View>
         </View>
 
         {/***********************/}
@@ -134,7 +148,6 @@ export default function MenuHeader() {
                 onPress={() => {
                   setCurrentMenuCategoryIndex(index);
                   handleCategoryPress(menuCategories2[index]);
-                  console.log("INDEX", menuCategories2[index]);
                 }}
                 style={{
                   backgroundColor: "white",
