@@ -43,7 +43,7 @@ export default function MenuScreen() {
   useEffect(() => {
     fetchRestaurantMenu(searchParams.menu as string).then((data) => {
       if (data) {
-        //console.log("DATAAAAAAAA", data);
+        //console.log("RESTAURANT MENU DATA]", data);
 
         setMenuData(data.menu);
       }

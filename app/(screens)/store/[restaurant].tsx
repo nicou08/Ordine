@@ -3,11 +3,15 @@ import {
   ScrollView,
   View,
   Text,
+  TextInput,
   Dimensions,
   Image,
   Pressable,
   FlatList,
   Platform,
+  Modal,
+  KeyboardAvoidingView,
+  TouchableOpacity,
 } from "react-native";
 import { router, usePathname, useLocalSearchParams } from "expo-router";
 import {
@@ -18,7 +22,9 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { supabase } from "../../../utils/supabase";
+import { Session } from "@supabase/supabase-js";
 import Carousel from "react-native-reanimated-carousel";
+//import { TouchableOpacity } from "react-native-gesture-handler";
 
 const width = Dimensions.get("window").width;
 
@@ -77,11 +83,110 @@ async function fetchRestaurantInfo(restaurantID: string) {
   }
 }
 
+/********************************/
+/*  Get restaurant reviews  */
+/********************************/
+async function fetchRestaurantReviews({
+  restaurantID,
+}: {
+  restaurantID: string;
+}) {
+  let { data, error } = await supabase
+    .from("Reviews Table")
+    .select("*")
+    .eq("restaurant_id", restaurantID);
+
+  if (error) {
+    console.log("error", error);
+    return null; // or return [];
+  } else {
+    //console.log(JSON.stringify(data, null, 2));
+    //console.log("DATA [RESTAURANT]", data);
+    return data;
+  }
+}
+
+/*******************/
+/*  Get user name  */
+/*******************/
+async function getUserName({ user_id }: { user_id: string }) {
+  const { data, error } = await supabase
+    .from("Profile Table")
+    .select("name")
+    .eq("id", user_id)
+    .single();
+
+  if (error) {
+    console.log("Error fetching user name: ", error);
+    return null;
+  } else {
+    return data;
+  }
+}
+
+/****************************/
+/*  Post Restaurant Review  */
+/****************************/
+async function postReview({
+  restaurant_id,
+  name,
+  rating,
+  review,
+}: {
+  restaurant_id: string;
+  name: string;
+  rating: number;
+  review: string;
+}) {
+  console.log("restaurant_id", restaurant_id);
+  console.log("name", name);
+  console.log("rating", rating);
+  console.log("review", review);
+
+  const { data, error } = await supabase.from("Reviews Table").insert([
+    {
+      restaurant_id: restaurant_id,
+      user_name: name,
+      rating: rating,
+      review: review,
+    },
+  ]);
+
+  if (error) {
+    console.log("Error posting review: ", error);
+    return null;
+  } else {
+    console.log("Review posted successfully!");
+    return data;
+  }
+}
+
 export default function RestaurantScreen() {
+  // Get session
+  const [session, setSession] = useState<Session | null>(null);
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+  }, []);
+
   const [restaurantInfo, setRestaurantInfo] = useState<Restaurant | null>(null);
+  const [restaurantReviews, setRestaurantReviews] = useState<any[]>([]);
   const [images, setImages] = useState<string[]>([]);
-  const pathname = usePathname();
   const searchParams = useLocalSearchParams();
+
+  const [userName, setUserName] = useState("");
+
+  const [modalReviewVisible, setModalReviewVisible] = useState(false);
+  const [review, setReview] = useState({
+    rating: 0,
+    comment: "",
+  });
+
   //console.log("searchParams: ", searchParams.restaurant);
   //console.log("searchParamsname: ", searchParams);
 
@@ -103,6 +208,40 @@ export default function RestaurantScreen() {
       }
     });
   }, [setImages]);
+
+  // Get user name
+  useEffect(() => {
+    if (session) {
+      getUserName({ user_id: session.user.id }).then((data) => {
+        if (data) {
+          setUserName(data.name);
+        }
+      });
+    }
+  });
+
+  // Get restaurant reviews
+  useEffect(() => {
+    fetchRestaurantReviews({
+      restaurantID: searchParams.restaurant as string,
+    }).then((data) => {
+      if (data) {
+        setRestaurantReviews(data);
+        console.log("restaurantReviews", data);
+      }
+    });
+  }, []);
+
+  // Handle review submit
+  const handleReviewSubmit = () => {
+    // Add review to database
+    postReview({
+      restaurant_id: restaurantInfo?.id as string,
+      name: userName,
+      rating: review.rating,
+      review: review.comment,
+    });
+  };
 
   // Handle Heart Press
   const [heartFilled, setHeartFilled] = useState(false);
@@ -288,7 +427,7 @@ export default function RestaurantScreen() {
           {/*****************************/}
           <View
             style={{
-              backgroundColor: "pink",
+              backgroundColor: "white",
               width: width,
               flex: 1,
               alignItems: "center",
@@ -351,7 +490,18 @@ export default function RestaurantScreen() {
                   //overflow: "hidden",
                 }}
               >
-                <Pressable>
+                <Pressable
+                  onPress={() =>
+                    router.push({
+                      pathname: "/menu/:menu",
+                      params: {
+                        menu: restaurantInfo?.id as string,
+                        name: restaurantInfo?.name as string,
+                        location: restaurantInfo?.address as string,
+                      },
+                    })
+                  }
+                >
                   <Image
                     source={{ uri: item.image }}
                     style={{
@@ -428,33 +578,80 @@ export default function RestaurantScreen() {
               flex: 1,
               alignItems: "center",
               paddingLeft: 20,
+              paddingRight: 20,
               paddingBottom: 10,
             }}
           >
-            <Pressable
+            <View
               style={{
                 backgroundColor: "white",
                 alignSelf: "flex-start",
                 flexDirection: "row",
+                justifyContent: "space-between",
+                width: "100%",
               }}
             >
-              <Text
-                style={{ fontSize: 17, color: "#8c8c8c", fontWeight: "bold" }}
-              >
-                0 USER RATINGS{" "}
-              </Text>
-              <View style={{ justifyContent: "center" }}>
-                <Entypo name="chevron-right" size={17} color="#8c8c8c" />
+              <View style={{ flexDirection: "row" }}>
+                <Text
+                  style={{ fontSize: 17, color: "#8c8c8c", fontWeight: "bold" }}
+                >
+                  {restaurantReviews.length} USER RATINGS{" "}
+                </Text>
+                <View style={{ justifyContent: "center" }}>
+                  <Entypo name="chevron-right" size={17} color="#8c8c8c" />
+                </View>
               </View>
-            </Pressable>
+              <Pressable
+                onPress={() => setModalReviewVisible(true)}
+                style={{
+                  //backgroundColor: "lightcyan",
+                  padding: 0,
+                  margin: 0,
+                  borderRadius: 0,
+                  //height: 17,
+                  justifyContent: "center",
+                }}
+              >
+                <Text
+                  style={{ fontSize: 17, color: "#CE3535", fontWeight: "bold" }}
+                >
+                  WRITE REIVEW
+                </Text>
+              </Pressable>
+            </View>
+            <View
+              style={{
+                width: "100%",
+                backgroundColor: "white",
+              }}
+            >
+              {restaurantReviews.length > 0 ? (
+                <View style={{ paddingTop: 20, marginBottom: 110 }}>
+                  {restaurantReviews.map((item, index) => (
+                    <View
+                      key={index}
+                      style={{ flexDirection: "row", paddingBottom: 30 }}
+                    >
+                      <Image
+                        source={require("../../../assets/images/ProfilePlaceholder.jpg")}
+                        style={{ height: 40, width: 40, borderRadius: 100 }}
+                      />
+                      <View
+                        style={{ paddingLeft: 20, paddingRight: 0, flex: 1 }}
+                      >
+                        <Text style={{ fontWeight: "500", fontSize: 18 }}>
+                          {item.user_name}
+                        </Text>
+                        <Text style={{ paddingTop: 5 }}>{item.review}</Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              ) : (
+                <View style={{ height: 140 }}></View>
+              )}
+            </View>
           </View>
-          <View style={{ height: 140 }}></View>
-          {/* <Text style={{ paddingTop: 40 }}>Welcome! {pathname} </Text>
-          <Text>
-            searchParams: {searchParams.restaurant} type:{" "}
-            {typeof searchParams.restaurant}{" "}
-          </Text>
-           */}
         </View>
       </ScrollView>
       <View
@@ -495,6 +692,227 @@ export default function RestaurantScreen() {
           </Text>
         </Pressable>
       </View>
+
+      {/************************************************************/}
+      {/******************** WRITE REVIEW MODAL ********************/}
+      {/************************************************************/}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalReviewVisible}
+        onRequestClose={() => setModalReviewVisible(false)}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+            }}
+          >
+            <View style={{}}>
+              <View
+                style={{
+                  width: width * 0.9,
+                  backgroundColor: "white",
+                  borderRadius: 40,
+                  // alignItems: "center",
+                  // justifyContent: "center",
+                  paddingTop: 20,
+                  paddingBottom: 40,
+                  paddingLeft: 20,
+                  paddingRight: 20,
+                }}
+              >
+                <View
+                  style={{ flexDirection: "row", height: 50, marginBottom: 20 }}
+                >
+                  <Image
+                    source={require("../../../assets/images/ProfilePlaceholder.jpg")}
+                    style={{
+                      width: 50,
+                      height: 50,
+                      borderRadius: 100,
+                      backgroundColor: "gray",
+                      marginBottom: 10,
+                    }}
+                  />
+                  <View
+                    style={{
+                      //backgroundColor: "pink",
+                      flex: 1,
+                      justifyContent: "center",
+                      paddingLeft: 20,
+                    }}
+                  >
+                    <Text style={{ fontWeight: "bold", fontSize: 17 }}>
+                      {userName}
+                    </Text>
+                  </View>
+                  <Pressable
+                    onPress={() => setModalReviewVisible(false)}
+                    style={{
+                      backgroundColor: "#CE3535",
+                      width: 50,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderRadius: 100,
+                    }}
+                  >
+                    <AntDesign name="close" size={24} color="white" />
+                  </Pressable>
+                </View>
+                <View
+                  style={{
+                    height: 100,
+                    backgroundColor: "#F1F1F1",
+                    borderRadius: 20,
+                    paddingTop: 12,
+                    paddingLeft: 20,
+                    paddingRight: 20,
+                    paddingBottom: 12,
+                  }}
+                >
+                  <TextInput
+                    placeholder="Write a review"
+                    placeholderTextColor={"gray"}
+                    style={{ color: "black" }}
+                    multiline={true}
+                    keyboardType="default"
+                    textContentType="none"
+                    returnKeyType="done"
+                    value={review.comment}
+                    onChangeText={(text) =>
+                      setReview((prevReview) => ({
+                        ...prevReview,
+                        comment: text,
+                      }))
+                    }
+                  />
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    paddingTop: 20,
+                  }}
+                >
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      flex: 1,
+                    }}
+                  >
+                    <Pressable
+                      onPress={() =>
+                        setReview((prevReview) => ({
+                          ...prevReview,
+                          rating: 1,
+                        }))
+                      }
+                    >
+                      <Entypo
+                        name={review.rating >= 1 ? "star" : "star-outlined"}
+                        size={30}
+                        color="#CE3535"
+                      />
+                    </Pressable>
+                    <Pressable
+                      onPress={() =>
+                        setReview((prevReview) => ({
+                          ...prevReview,
+                          rating: 2,
+                        }))
+                      }
+                    >
+                      <Entypo
+                        name={review.rating >= 2 ? "star" : "star-outlined"}
+                        size={30}
+                        color="#CE3535"
+                      />
+                    </Pressable>
+                    <Pressable
+                      onPress={() =>
+                        setReview((prevReview) => ({
+                          ...prevReview,
+                          rating: 3,
+                        }))
+                      }
+                    >
+                      <Entypo
+                        name={review.rating >= 3 ? "star" : "star-outlined"}
+                        size={30}
+                        color="#CE3535"
+                      />
+                    </Pressable>
+                    <Pressable
+                      onPress={() =>
+                        setReview((prevReview) => ({
+                          ...prevReview,
+                          rating: 4,
+                        }))
+                      }
+                    >
+                      <Entypo
+                        name={review.rating >= 4 ? "star" : "star-outlined"}
+                        size={30}
+                        color="#CE3535"
+                      />
+                    </Pressable>
+                    <Pressable
+                      onPress={() =>
+                        setReview((prevReview) => ({
+                          ...prevReview,
+                          rating: 5,
+                        }))
+                      }
+                    >
+                      <Entypo
+                        name={review.rating >= 5 ? "star" : "star-outlined"}
+                        size={30}
+                        color="#CE3535"
+                      />
+                    </Pressable>
+                  </View>
+                  <View style={{ paddingLeft: 15 }}>
+                    <Pressable
+                      onPress={() => {
+                        handleReviewSubmit();
+                        setModalReviewVisible(false);
+                        setReview({ rating: 0, comment: "" });
+                      }}
+                      style={{
+                        backgroundColor: "#f1f1f1",
+                        paddingTop: 5,
+                        paddingBottom: 5,
+                        paddingLeft: 20,
+                        paddingRight: 20,
+                        borderRadius: 20,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "#CE3535",
+                          fontSize: 20,
+                          fontWeight: "600",
+                        }}
+                      >
+                        Submit
+                      </Text>
+                    </Pressable>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </>
   );
 }
+// Consolas, 'Courier New', monospace
