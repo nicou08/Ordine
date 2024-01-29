@@ -11,10 +11,21 @@ import {
   Modal,
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import { Ionicons, AntDesign } from "@expo/vector-icons";
+import {
+  Ionicons,
+  AntDesign,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 import { supabase } from "../../../utils/supabase";
 
 const { width, height } = Dimensions.get("window");
+
+interface CartItem {
+  name: string;
+  image: string;
+  price: number;
+  quantity: number;
+}
 
 interface ReservationInfo {
   restaurant: string;
@@ -23,8 +34,8 @@ interface ReservationInfo {
   seat_preference: string;
   participants: string;
   preordered_items: any;
-  price_of_tax: string;
-  price_of_items: string;
+  price_of_tax: number;
+  price_of_items: number;
 }
 
 /*******************************************/
@@ -89,8 +100,8 @@ export default function ReservationScreen() {
     seat_preference: "",
     participants: "",
     preordered_items: [],
-    price_of_tax: "",
-    price_of_items: "",
+    price_of_tax: 0.0,
+    price_of_items: 0.0,
   });
   const [reservationFormattedDate, setReservationFormattedDate] = useState("");
 
@@ -212,6 +223,140 @@ export default function ReservationScreen() {
           <Text style={{ fontSize: 14, color: "#8c8c8c", fontWeight: "bold" }}>
             PREORDERED ITEMS{" "}
           </Text>
+        </View>
+        <View style={{ flex: 1 }}>
+          {reservationInfo.preordered_items != null ? (
+            <View>
+              {reservationInfo.preordered_items.map(
+                (item: CartItem, index: number) => (
+                  <View
+                    key={index}
+                    style={{
+                      flexDirection: "row",
+                      marginBottom: 20,
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Image
+                      source={{ uri: item.image }}
+                      style={{
+                        width: 60,
+                        height: 60,
+                        borderRadius: 30,
+                        marginRight: 10,
+                      }}
+                      resizeMode="cover"
+                    />
+                    <View
+                      style={{
+                        flex: 1,
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <Text style={{ fontSize: 18 }}>{item.name}</Text>
+                      <Text style={{ color: "#8c8c8c", fontSize: 18 }}>
+                        ${Number(item.price).toFixed(2)} {"         "} x{" "}
+                        {item.quantity}
+                      </Text>
+                    </View>
+                    <View style={{ justifyContent: "center" }}>
+                      <Text
+                        style={{
+                          color: "black",
+                          fontSize: 18,
+                          fontWeight: "bold",
+                        }}
+                      >
+                        ${Number(item.price * item.quantity).toFixed(2)}
+                      </Text>
+                    </View>
+                  </View>
+                )
+              )}
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  paddingBottom: 5,
+                }}
+              >
+                <Text
+                  style={{ fontSize: 14, color: "black", fontWeight: "bold" }}
+                >
+                  SUBTOTAL
+                </Text>
+                <Text style={{ fontSize: 18 }}>
+                  $
+                  {reservationInfo.preordered_items.reduce(
+                    (total: number, menuItem: CartItem) =>
+                      total + menuItem.quantity * menuItem.price,
+                    0
+                  )}
+                </Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  paddingBottom: 5,
+                }}
+              >
+                <Text
+                  style={{ fontSize: 14, color: "black", fontWeight: "bold" }}
+                >
+                  TAX
+                </Text>
+                <Text style={{ fontSize: 18 }}>
+                  {" "}
+                  ${reservationInfo?.price_of_tax}
+                </Text>
+              </View>
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Text
+                  style={{ fontSize: 14, color: "black", fontWeight: "bold" }}
+                >
+                  TOTAL
+                </Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
+                  <MaterialCommunityIcons
+                    name="currency-usd"
+                    size={50}
+                    height={50}
+                    width={45}
+                    color="#CE3535"
+                  />
+                  <Text
+                    style={{
+                      color: "#CE3535",
+                      fontSize: 40,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {reservationInfo?.price_of_items}
+                  </Text>
+                </View>
+              </View>
+              <View style={{ height: 150 }}></View>
+            </View>
+          ) : (
+            <View style={{ alignItems: "center", marginTop: 120 }}>
+              <Text style={{ fontSize: 15, color: "#8c8c8c" }}>
+                You have no preordered items
+              </Text>
+            </View>
+          )}
         </View>
       </ScrollView>
 
