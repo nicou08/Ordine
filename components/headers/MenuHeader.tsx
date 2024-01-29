@@ -114,7 +114,15 @@ export default function MenuHeader() {
           </Text>
           {searchParams.reservation_id != null ? (
             <Pressable
-              onPress={() => router.push("/cart")}
+              //onPress={() => router.push("/cart")}
+              onPress={() =>
+                router.push({
+                  pathname: "/cart",
+                  params: {
+                    reservation_id: searchParams.reservation_id as string,
+                  },
+                })
+              }
               style={{ width: 30, height: 30 }}
             >
               <Entypo name="shopping-cart" size={30} color="black" />

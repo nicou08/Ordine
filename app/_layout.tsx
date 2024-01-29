@@ -10,6 +10,7 @@ import RestaurantHeader from "../components/headers/RestaurantHeader";
 import SettingsHeader from "../components/headers/SettingsHeader";
 import ReservingHeader from "../components/headers/ReservingHeader";
 import MenuHeader from "../components/headers/MenuHeader";
+import CheckoutHeader from "../components/headers/CheckoutHeader";
 import MenuScrollContextProvider, {
   MenuScrollContext,
 } from "../context/MenuScrollContext";
@@ -125,6 +126,18 @@ function RootLayoutNav() {
                   name="(screens)/cart/index"
                   options={{
                     header: () => <SettingsHeader title="My Cart" />,
+                  }}
+                />
+                <Stack.Screen
+                  name="(screens)/cart/checkout"
+                  options={{
+                    header: () => <CheckoutHeader />,
+                  }}
+                />
+                <Stack.Screen
+                  name="(screens)/cart/successfulPayment"
+                  options={{
+                    header: () => <CheckoutHeader />,
                   }}
                 />
                 <Stack.Screen

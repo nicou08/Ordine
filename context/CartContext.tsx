@@ -14,6 +14,7 @@ interface CartContextType {
   decreaseQuantity: (itemName: string) => void;
   removeFromCart: (itemName: string) => void;
   clearCart: () => void;
+  getTotalPrice: () => number;
 }
 
 export const CartContext = createContext<CartContextType>({
@@ -23,6 +24,7 @@ export const CartContext = createContext<CartContextType>({
   decreaseQuantity: () => {},
   removeFromCart: () => {},
   clearCart: () => {},
+  getTotalPrice: () => 0,
 });
 
 interface CartProviderProps {
@@ -85,6 +87,13 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     setCartItems([]);
   };
 
+  const getTotalPrice = () => {
+    return cartItems.reduce(
+      (total, item) => total + item.quantity * item.price,
+      0
+    );
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -94,6 +103,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
         decreaseQuantity,
         removeFromCart,
         clearCart,
+        getTotalPrice,
       }}
     >
       {children}

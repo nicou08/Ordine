@@ -7,6 +7,7 @@ import {
   Image,
   Platform,
 } from "react-native";
+import { router, useLocalSearchParams } from "expo-router";
 import { Entypo } from "@expo/vector-icons";
 import { CartContext } from "../../../context/CartContext";
 import { supabase } from "../../../utils/supabase";
@@ -14,6 +15,9 @@ import { supabase } from "../../../utils/supabase";
 const width = Dimensions.get("window").width;
 
 export default function CartScreen() {
+  const searchParams = useLocalSearchParams();
+  console.log("HORSE", searchParams?.reservation_id);
+
   const { cartItems, decreaseQuantity, increaseQuantity } =
     useContext(CartContext);
 
@@ -112,6 +116,15 @@ export default function CartScreen() {
         }}
       >
         <Pressable
+          //onPress={() => router.push("/cart/checkout")}
+          onPress={() =>
+            router.push({
+              pathname: "/cart/checkout",
+              params: {
+                reservation_id: searchParams?.reservation_id as string,
+              },
+            })
+          }
           // onPress={() =>
           //   router.push({
           //     pathname: "/reserving",
