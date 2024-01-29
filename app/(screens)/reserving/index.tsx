@@ -94,7 +94,7 @@ async function makeReservation({
     console.log("error", error);
     return null;
   } else {
-    console.log("RESERVATION DATA", data);
+    //console.log("RESERVATION DATA", data);
     router.replace("/reservations");
     return data;
   }

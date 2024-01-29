@@ -63,9 +63,6 @@ export default function MenuScreen() {
       ref={scrollViewRef}
       style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 30 }}
     >
-      <TouchableOpacity onPress={addToCart} style={{ backgroundColor: "gray" }}>
-        <Text style={{ color: "white", fontSize: 40 }}>Add one</Text>
-      </TouchableOpacity>
       {menuCategories.map(
         (category, index) =>
           menuData && (
@@ -250,8 +247,18 @@ function MenuItem({ menuItem }: MenuItemProps) {
 
   const searchParams = useLocalSearchParams();
 
+  const { addToCart } = useContext(CartContext);
+
+  //console.log("MENU ITEM", menuItem);
+
   const handleAddToCart = () => {
-    console.log("ADD TO CART");
+    console.log("ADD TO CART", menuItem.name);
+    addToCart({
+      name: menuItem.name,
+      image: menuItem.image,
+      price: menuItem.price,
+      quantity: 1,
+    });
   };
 
   return (
@@ -401,7 +408,10 @@ function MenuItem({ menuItem }: MenuItemProps) {
                       paddingRight: 30,
                       borderRadius: 50,
                     }}
-                    onPress={() => handleAddToCart()}
+                    onPress={() => {
+                      handleAddToCart();
+                      setModalVisible(false);
+                    }}
                   >
                     <Text
                       style={{

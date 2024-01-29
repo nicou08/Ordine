@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Pressable, View, Text, FlatList, Platform } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import { Ionicons, AntDesign } from "@expo/vector-icons";
+import { Ionicons, AntDesign, Entypo } from "@expo/vector-icons";
 import { MenuScrollContext } from "../../context/MenuScrollContext";
 import { CategoryPositionContext } from "../../context/CategoryContext";
 import { CartContext } from "../../context/CartContext";
@@ -15,6 +15,11 @@ export default function MenuHeader() {
   const categoryPositions = useContext(CategoryPositionContext);
 
   const { cartItems } = useContext(CartContext);
+
+  const totalItemsInCart = cartItems.reduce(
+    (total, item) => total + item.quantity,
+    0
+  );
 
   // useEffect(() => {
   //   console.log("header ScrollViewRefff", scrollViewRef);
@@ -108,9 +113,36 @@ export default function MenuHeader() {
             Menu
           </Text>
           {searchParams.reservation_id != null ? (
-            <View style={{ width: 30 }}>
-              <Text style={{ fontSize: 25 }}>{cartItems}</Text>
-            </View>
+            <Pressable
+              onPress={() => router.push("/cart")}
+              style={{ width: 30, height: 30 }}
+            >
+              <Entypo name="shopping-cart" size={30} color="black" />
+              {cartItems.length > 0 ? (
+                <View
+                  style={{
+                    backgroundColor: "#CE3535",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: 23,
+                    width: 23,
+                    padding: 0,
+                    borderRadius: 20,
+                    marginTop: -16,
+                    marginLeft: 14,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "white",
+                      fontSize: 13,
+                    }}
+                  >
+                    {totalItemsInCart}
+                  </Text>
+                </View>
+              ) : null}
+            </Pressable>
           ) : (
             <View style={{ width: 30 }}></View>
           )}

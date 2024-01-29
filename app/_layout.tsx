@@ -122,6 +122,12 @@ function RootLayoutNav() {
                   }}
                 />
                 <Stack.Screen
+                  name="(screens)/cart/index"
+                  options={{
+                    header: () => <SettingsHeader title="My Cart" />,
+                  }}
+                />
+                <Stack.Screen
                   name="(screens)/settings/index"
                   options={{
                     header: () => <SettingsHeader title="Settings" />,
