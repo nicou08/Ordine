@@ -112,12 +112,30 @@ async function fetchRestaurantReviews({
 async function getUserName({ user_id }: { user_id: string }) {
   const { data, error } = await supabase
     .from("Profile Table")
-    .select("name")
+    .select("name,favourites")
     .eq("id", user_id)
     .single();
 
   if (error) {
-    console.log("Error fetching user name: ", error);
+    console.log("Error fetching USER name: ", error);
+    return null;
+  } else {
+    return data;
+  }
+}
+
+/*******************/
+/*  Get user favourites  */
+/*******************/
+async function getUserFavourites({ user_id }: { user_id: string }) {
+  const { data, error } = await supabase
+    .from("Profile Table")
+    .select("favourites")
+    .eq("id", user_id)
+    .single();
+
+  if (error) {
+    console.log("Error fetching user favourites: ", error);
     return null;
   } else {
     return data;
@@ -161,6 +179,120 @@ async function postReview({
   }
 }
 
+/****************************************/
+/*  Add First Restaurant to favourites  */
+/****************************************/
+// async function likeFirstRestaurant({
+//   user_id,
+//   restaurant_id,
+// }: {
+//   user_id: string;
+//   restaurant_id: string;
+// }) {
+//   console.log("Liked the restaurant");
+
+//   const { data, error } = await supabase
+//     .from("Profile Table")
+//     .update({ favourites: [restaurant_id] })
+//     .eq("id", user_id);
+
+//   if (error) {
+//     console.log("Error liking restaurant: ", error);
+//     return null;
+//   } else {
+//     console.log("Restaurant FIRST successfully!");
+//     return data;
+//   }
+// }
+
+/**********************************/
+/*  Add Restaurant to favourites  */
+/**********************************/
+async function likeRestaurant({
+  user_id,
+  restaurant_id,
+}: {
+  user_id: string;
+  restaurant_id: string;
+}) {
+  console.log("Liked the restaurant");
+
+  const { data, error } = await supabase
+    .from("Profile Table")
+    .select("favourites")
+    .eq("id", user_id);
+
+  if (error) {
+    console.log("Error getting favourites: ", error);
+    return null;
+  }
+
+  // Add restaurant_id to the favourites array
+  const newFavourites = [...data[0].favourites, restaurant_id];
+
+  console.log("new favourites", newFavourites);
+
+  // Update the favourites array in the database
+  const { data: data2, error: error2 } = await supabase
+    .from("Profile Table")
+    .update({ favourites: newFavourites })
+    .eq("id", user_id);
+
+  if (error) {
+    console.log("Error liking restaurant: ", error);
+    return null;
+  } else {
+    console.log("Restaurant liked successfully!");
+    return data;
+  }
+}
+
+/***************************************/
+/*  Remove Restaurant from favourites  */
+/***************************************/
+async function unlikeRestaurant({
+  user_id,
+  restaurant_id,
+}: {
+  user_id: string;
+  restaurant_id: string;
+}) {
+  console.log("Unliked the restaurant");
+
+  const { data, error } = await supabase
+    .from("Profile Table")
+    .select("favourites")
+    .eq("id", user_id);
+
+  if (error) {
+    console.log("Error getting favourites: ", error);
+    return null;
+  }
+
+  // Remove restaurant_id from the favourites array
+  const newFavourites = data[0].favourites.filter(
+    (id: string) => id !== restaurant_id
+  );
+
+  console.log("new favourites", newFavourites);
+
+  // Update the favourites array in the database
+  const { data: data2, error: error2 } = await supabase
+    .from("Profile Table")
+    .update({ favourites: newFavourites })
+    .eq("id", user_id);
+
+  if (error2) {
+    console.log("Error unliking restaurant: ", error2);
+    return null;
+  } else {
+    console.log("Restaurant unliked successfully!");
+    return data2;
+  }
+}
+
+/***************************** SCREEN *****************************/
+
 export default function RestaurantScreen() {
   // Get session
   const [session, setSession] = useState<Session | null>(null);
@@ -179,7 +311,9 @@ export default function RestaurantScreen() {
   const [images, setImages] = useState<string[]>([]);
   const searchParams = useLocalSearchParams();
 
+  const [userId, setUserId] = useState<string | null>(null);
   const [userName, setUserName] = useState("");
+  const [userFavourites, setUserFavourites] = useState<string[]>([]);
 
   const [modalReviewVisible, setModalReviewVisible] = useState(false);
   const [review, setReview] = useState({
@@ -191,6 +325,8 @@ export default function RestaurantScreen() {
   //console.log("searchParamsname: ", searchParams);
 
   // Get restaurant information
+  const [loadingRestaurantInfo, setLoadingRestaurantInfo] = useState(true);
+
   useEffect(() => {
     fetchRestaurantInfo(searchParams.restaurant as string).then((data) => {
       if (data) {
@@ -209,17 +345,6 @@ export default function RestaurantScreen() {
     });
   }, [setImages]);
 
-  // Get user name
-  useEffect(() => {
-    if (session) {
-      getUserName({ user_id: session.user.id }).then((data) => {
-        if (data) {
-          setUserName(data.name);
-        }
-      });
-    }
-  });
-
   // Get restaurant reviews
   useEffect(() => {
     fetchRestaurantReviews({
@@ -227,10 +352,82 @@ export default function RestaurantScreen() {
     }).then((data) => {
       if (data) {
         setRestaurantReviews(data);
-        console.log("restaurantReviews", data);
+        //console.log("restaurantReviews", data);
       }
     });
   }, []);
+
+  /*
+   *
+   * Get user name and favourites
+   *
+   */
+
+  // Initialize loading state for user ID
+  const [loading, setLoading] = useState(true);
+
+  // Get user ID once on component mount
+  useEffect(() => {
+    const userId = session?.user?.id;
+
+    // Check if user ID is available
+    if (userId) {
+      setUserId(userId);
+      setLoading(false);
+    }
+  }, [session]);
+
+  // Get user name
+  const [loadingUserNameFav, setLoadingUserNameFav] = useState(true);
+
+  useEffect(() => {
+    if (session && !loading && userId !== null) {
+      getUserName({ user_id: userId }).then((data) => {
+        if (data) {
+          setUserName(data.name);
+          setUserFavourites(data.favourites);
+          setLoadingUserNameFav(false);
+          console.log("USER FAVOURITES", data.favourites);
+        }
+      });
+    }
+  }, [userId, session, loading]);
+
+  // Handle Heart Press
+  const [heartFilled, setHeartFilled] = useState(false);
+
+  useEffect(() => {
+    setHeartFilled(userFavourites.includes(restaurantInfo?.id as string));
+    console.log(
+      "Is Hearttt Filled ?",
+      userFavourites.includes(restaurantInfo?.id as string)
+    );
+  }, [loadingRestaurantInfo, loadingUserNameFav, userFavourites]);
+
+  const handleHeartPress = async () => {
+    console.log("favourites", userFavourites);
+
+    if (userFavourites.includes(restaurantInfo?.id as string)) {
+      // Unlike restaurant
+      console.log("unlike");
+      unlikeRestaurant({
+        user_id: session?.user.id as string,
+        restaurant_id: restaurantInfo?.id as string,
+      });
+      userFavourites.filter((id: string) => id !== restaurantInfo?.id);
+      console.log("CURRent userFavourites", userFavourites);
+    } else {
+      // Like restaurant
+      console.log("like");
+      likeRestaurant({
+        user_id: session?.user.id as string,
+        restaurant_id: restaurantInfo?.id as string,
+      });
+      userFavourites.push(restaurantInfo?.id as string);
+      console.log("Current userFavourites", userFavourites);
+    }
+    setHeartFilled(!heartFilled);
+  };
 
   // Handle review submit
   const handleReviewSubmit = () => {
@@ -241,13 +438,6 @@ export default function RestaurantScreen() {
       rating: review.rating,
       review: review.comment,
     });
-  };
-
-  // Handle Heart Press
-  const [heartFilled, setHeartFilled] = useState(false);
-
-  const handleHeartPress = () => {
-    setHeartFilled(!heartFilled);
   };
 
   // Font size
