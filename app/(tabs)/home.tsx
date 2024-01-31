@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Dimensions,
   Pressable,
@@ -9,13 +9,200 @@ import {
   FlatList,
   Image,
 } from "react-native";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
-
+import { Session } from "@supabase/supabase-js";
 import { supabase } from "../../utils/supabase";
 import { sampleRestaurants } from "../../constants/SampleRestaurants";
 
 const { width, height } = Dimensions.get("window");
+
+/********************************/
+// Get restaurants from database
+/********************************/
+async function fetchRestaurants() {
+  let { data, error } = await supabase
+    .from("Restaurant Table")
+    .select("id,name,restaurant_image,tags,wait_time,price_range,status");
+
+  if (error) {
+    console.log("error", error);
+    return null; // or return [];
+  } else {
+    //console.log(JSON.stringify(data, null, 2));
+    //console.log("HOME DaaTA", data);
+    return data;
+  }
+}
+
+/********************************/
+// Get restaurants from database
+/********************************/
+async function fetchUserFavourites({ user_id }: { user_id: string }) {
+  const { data, error } = await supabase
+    .from("Profile Table")
+    .select("favourites")
+    .eq("id", user_id);
+
+  if (error) {
+    console.log("Error fetching favourites: ", error);
+    return null;
+  } else {
+    return data;
+  }
+}
+
+/**
+ *
+ *
+ *
+ * Home Screen
+ *
+ *
+ *
+ */
+export default function HomeScreen() {
+  // Get session
+  const [session, setSession] = useState<Session | null>(null);
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+  }, []);
+
+  const [restaurants, setRestaurants] = useState<any[]>([]);
+
+  const [trendingRestaurants, setTrendingRestaurants] = useState<any[]>([]);
+  const [seaFoodRestaurants, setSeaFoodRestaurants] = useState<any[]>([]);
+  const [chickenRestaurants, setChickenRestaurants] = useState<any[]>([]);
+  const [meatRestaurants, setMeatRestaurants] = useState<any[]>([]);
+  const [japaneseRestaurants, setJapaneseRestaurants] = useState<any[]>([]);
+
+  // Get user's favourites
+  const [userId, setUserId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoadingFavourites, setIsLoadingFavourites] = useState<boolean>(true);
+  const [favouritesIds, setFavouritesIds] = useState<any[]>([]);
+  const [favouriteRestaurants, setFavouriteRestaurants] = useState<any[]>([]);
+
+  // Get user ID once on component mount
+  useEffect(() => {
+    const userId = session?.user?.id;
+
+    // Check if user ID is available
+    if (userId) {
+      setUserId(userId);
+      setIsLoading(false);
+    }
+  }, [session]);
+
+  useEffect(() => {
+    if (session && !isLoading && userId !== null) {
+      console.log("Guinea pig");
+      fetchUserFavourites({ user_id: userId }).then((data) => {
+        if (data) {
+          setFavouritesIds(data[0].favourites);
+          setIsLoadingFavourites(false);
+          console.log("FAVOURITESS", data[0].favourites);
+        }
+      });
+    }
+  }, [isLoading]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (session && !isLoading && userId !== null) {
+        console.log("useFocusEffect");
+        fetchUserFavourites({ user_id: userId }).then((data) => {
+          if (data) {
+            setFavouritesIds(data[0].favourites);
+            setIsLoadingFavourites(false);
+            console.log("useFocusEffect FAVOURITESS", data[0].favourites);
+          }
+        });
+      }
+    }, [session, isLoading, userId])
+  );
+
+  // Get restaurants from database
+  useEffect(() => {
+    if (!isLoadingFavourites) {
+      fetchRestaurants().then((data) => {
+        if (data) {
+          setRestaurants(data);
+
+          /**********************************/
+          /********* Make carousels *********/
+          /**********************************/
+
+          // Trending restaurants
+          const trending = data.filter(
+            (restaurant) => restaurant.status === "Trending"
+          );
+          setTrendingRestaurants(trending);
+          //console.log("TRENDING", trending);
+
+          // Favourites restaurants
+          console.log("favouriteIds", favouritesIds);
+          const favourites = data.filter((restaurant) =>
+            favouritesIds.includes(restaurant.id)
+          );
+          //console.log("TRUE FAVOURITES", favourites);
+          setFavouriteRestaurants(favourites);
+
+          // Seafood restaurants
+          const seaFood = data.filter((restaurant) =>
+            restaurant.tags.includes("Sea Food")
+          );
+          setSeaFoodRestaurants(seaFood);
+
+          // Meat restaurants
+          const meat = data.filter((restaurant) =>
+            restaurant.tags.includes("Beef")
+          );
+          setMeatRestaurants(meat);
+
+          // Chicken restaurants
+          const chicken = data.filter((restaurant) =>
+            restaurant.tags.includes("Chicken")
+          );
+          setChickenRestaurants(chicken);
+
+          // Japanese restaurants
+          const japanese = data.filter((restaurant) =>
+            restaurant.tags.includes("Japanese")
+          );
+          setJapaneseRestaurants(japanese);
+        }
+      });
+    }
+  }, [isLoadingFavourites, favouritesIds]);
+
+  return (
+    <>
+      <StatusBar barStyle="dark-content" />
+      <ScrollView
+        contentContainerStyle={{
+          paddingTop: 20,
+          //paddingBottom: 20,
+          backgroundColor: "#f5f5f5",
+        }}
+        style={{ flex: 1, backgroundColor: "#f5f5f5" }}
+      >
+        <MyShowcase title="EL GRAN PACHONASO" data={trendingRestaurants} />
+        <MyShowcase title="Favourites" data={favouriteRestaurants} />
+        <MyShowcase title="Sea Food" data={seaFoodRestaurants} />
+        <MyShowcase title="Meat" data={meatRestaurants} />
+        <MyShowcase title="Chicken" data={chickenRestaurants} />
+        <MyShowcase title="Japanese" data={japaneseRestaurants} />
+      </ScrollView>
+    </>
+  );
+}
 
 function MyCarousel({ data }: { data?: any }) {
   return (
@@ -186,98 +373,5 @@ function MyShowcase({ title, data }: { title: string; data?: any }) {
       </Text>
       <MyCarousel data={data} />
     </View>
-  );
-}
-/********************************/
-// Get restaurants from database
-/********************************/
-async function fetchRestaurants() {
-  let { data, error } = await supabase
-    .from("Restaurant Table")
-    .select("id,name,restaurant_image,tags,wait_time,price_range,status");
-
-  if (error) {
-    console.log("error", error);
-    return null; // or return [];
-  } else {
-    //console.log(JSON.stringify(data, null, 2));
-    //console.log("HOME DaaTA", data);
-    return data;
-  }
-}
-
-export default function HomeScreen() {
-  const [restaurants, setRestaurants] = useState<any[]>([]);
-  const [restaurantss, setRestaurantss] = useState(sampleRestaurants);
-
-  const [trendingRestaurants, setTrendingRestaurants] = useState<any[]>([]);
-  const [favouriteRestaurants, setFavouriteRestaurants] = useState<any[]>([]);
-  const [seaFoodRestaurants, setSeaFoodRestaurants] = useState<any[]>([]);
-  const [chickenRestaurants, setChickenRestaurants] = useState<any[]>([]);
-  const [meatRestaurants, setMeatRestaurants] = useState<any[]>([]);
-  const [japaneseRestaurants, setJapaneseRestaurants] = useState<any[]>([]);
-
-  // Get restaurants from database
-  useEffect(() => {
-    fetchRestaurants().then((data) => {
-      if (data) {
-        setRestaurants(data);
-
-        /**********************************/
-        /********* Make carousels *********/
-        /**********************************/
-
-        // Trending restaurants
-        const trending = data.filter(
-          (restaurant) => restaurant.status === "Trending"
-        );
-        setTrendingRestaurants(trending);
-        //console.log("TRENDING", trending);
-
-        // Seafood restaurants
-        const seaFood = data.filter((restaurant) =>
-          restaurant.tags.includes("Sea Food")
-        );
-        setSeaFoodRestaurants(seaFood);
-
-        // Meat restaurants
-        const meat = data.filter((restaurant) =>
-          restaurant.tags.includes("Beef")
-        );
-        setMeatRestaurants(meat);
-
-        // Chicken restaurants
-        const chicken = data.filter((restaurant) =>
-          restaurant.tags.includes("Chicken")
-        );
-        setChickenRestaurants(chicken);
-
-        // Japanese restaurants
-        const japanese = data.filter((restaurant) =>
-          restaurant.tags.includes("Japanese")
-        );
-        setJapaneseRestaurants(japanese);
-      }
-    });
-  }, []);
-
-  return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <ScrollView
-        contentContainerStyle={{
-          paddingTop: 20,
-          //paddingBottom: 20,
-          backgroundColor: "#f5f5f5",
-        }}
-        style={{ flex: 1, backgroundColor: "#f5f5f5" }}
-      >
-        <MyShowcase title="EL GRAN PACHONASO" data={trendingRestaurants} />
-        <MyShowcase title="Sea Food" data={seaFoodRestaurants} />
-        <MyShowcase title="Meat" data={meatRestaurants} />
-        <MyShowcase title="Chicken" data={chickenRestaurants} />
-        <MyShowcase title="Japanese" data={japaneseRestaurants} />
-      </ScrollView>
-    </>
   );
 }
