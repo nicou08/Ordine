@@ -193,7 +193,7 @@ export default function HomeScreen() {
         }}
         style={{ flex: 1, backgroundColor: "#f5f5f5" }}
       >
-        <MyShowcase title="EL GRAN PACHONASO" data={trendingRestaurants} />
+        <MyShowcase title="Trending" data={trendingRestaurants} />
         <MyShowcase title="Favourites" data={favouriteRestaurants} />
         <MyShowcase title="Sea Food" data={seaFoodRestaurants} />
         <MyShowcase title="Meat" data={meatRestaurants} />
