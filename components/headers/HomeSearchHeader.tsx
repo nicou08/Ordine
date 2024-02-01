@@ -1,10 +1,29 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, Dimensions } from "react-native";
+import React, { useState, useContext } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Dimensions,
+  TouchableOpacity,
+} from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
+import { router } from "expo-router";
+import { supabase } from "../../utils/supabase";
+import { SearchContext, useSearch } from "../../context/SearchContext";
 
 const { width, height } = Dimensions.get("window");
 
 export default function HomeSearchHeader({ title }: { title: string }) {
-  const [search, setSearch] = useState("");
+  const [currentSearch, setCurrentSearch] = useState("");
+
+  // const { search, setSearch } = useContext(SearchContext); // this is the same as the line below
+  const { search, setSearch } = useSearch();
+
+  const handleSearch = () => {
+    console.log("searching", currentSearch);
+    setSearch(currentSearch);
+  };
+
   return (
     <View
       style={{
@@ -35,29 +54,52 @@ export default function HomeSearchHeader({ title }: { title: string }) {
           </Text>
           <View></View>
         </View>
-        <TextInput
+        <View
           style={{
             height: 40,
-            width: "100%",
             backgroundColor: "#F1F1F1",
             borderRadius: 20,
-            paddingLeft: 20,
-            paddingRight: 20,
+            // paddingLeft: 20,
+            // paddingRight: 20,
+            flexDirection: "row",
+            justifyContent: "space-between",
           }}
-          placeholder={
-            title === "Search"
-              ? "Search Restaurants or Categories"
-              : "10 Brentwood Common, NW"
-          }
-          placeholderTextColor={"gray"}
-          textContentType="none"
-          returnKeyType="search"
-          value={search}
-          onChangeText={setSearch}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
+        >
+          <TextInput
+            style={{
+              height: 40,
+              //width: "80%",
+              flex: 1,
+              backgroundColor: "#F1F1F1",
+              borderRadius: 20,
+              paddingLeft: 20,
+              paddingRight: 10,
+            }}
+            placeholder={
+              title === "Search"
+                ? "Search Restaurants or Categories"
+                : "10 Brentwood Common, NW"
+            }
+            placeholderTextColor={"gray"}
+            textContentType="none"
+            returnKeyType="done"
+            value={currentSearch}
+            onChangeText={setCurrentSearch}
+            keyboardType="default"
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          <TouchableOpacity
+            onPress={handleSearch}
+            style={{
+              width: 40,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <FontAwesome name="search" size={24} color="black" />
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );

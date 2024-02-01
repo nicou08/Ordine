@@ -16,6 +16,7 @@ import MenuScrollContextProvider, {
 } from "../context/MenuScrollContext";
 import { CategoryPositionProvider } from "../context/CategoryContext";
 import { CartProvider } from "../context/CartContext";
+import { SearchProvider } from "../context/SearchContext";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -77,113 +78,113 @@ function RootLayoutNav() {
     }
   }, [session, router]);
 
-  //const categoryPositions = useContext(CategoryContext);
-  // useEffect(() => {
-  //   console.log("ROOT CATEGORY POSITIONS", categoryPositions);
-  // }, [categoryPositions]);
-
   return (
     <>
       {session != null && session.user ? (
-        <MenuScrollContextProvider>
-          <CategoryPositionProvider>
-            <CartProvider>
-              <Stack>
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen
-                  name="(screens)/store/[restaurant]"
-                  options={{
-                    header: () => <RestaurantHeader />,
-                  }}
-                />
-                <Stack.Screen
-                  name="(screens)/reserving/index"
-                  options={{
-                    header: () => <ReservingHeader title="Reserving" />,
-                  }}
-                />
-                <Stack.Screen
-                  name="(screens)/reservations/[reservation]"
-                  options={{
-                    header: () => <ReservingHeader title="Reservation" />,
-                  }}
-                />
-                <Stack.Screen
-                  name="(screens)/reserving/updateReservation"
-                  options={{
-                    header: () => (
-                      <ReservingHeader title="Updating Reservation" />
-                    ),
-                  }}
-                />
-                <Stack.Screen
-                  name="(screens)/menu/[menu]"
-                  options={{
-                    header: () => <MenuHeader />,
-                  }}
-                />
-                <Stack.Screen
-                  name="(screens)/cart/index"
-                  options={{
-                    header: () => <SettingsHeader title="My Cart" />,
-                  }}
-                />
-                <Stack.Screen
-                  name="(screens)/cart/checkout"
-                  options={{
-                    header: () => <CheckoutHeader />,
-                  }}
-                />
-                <Stack.Screen
-                  name="(screens)/cart/successfulPayment"
-                  options={{
-                    header: () => <CheckoutHeader />,
-                  }}
-                />
-                <Stack.Screen
-                  name="(screens)/settings/index"
-                  options={{
-                    header: () => <SettingsHeader title="Settings" />,
-                  }}
-                />
-                <Stack.Screen
-                  name="(screens)/settings/Preferences"
-                  options={{
-                    header: () => <SettingsHeader title="Preferences" />,
-                  }}
-                />
-                <Stack.Screen
-                  name="(screens)/settings/Security"
-                  options={{
-                    header: () => <SettingsHeader title="Security" />,
-                  }}
-                />
-                <Stack.Screen
-                  name="(screens)/settings/TermsOfUse"
-                  options={{
-                    header: () => <SettingsHeader title="Terms of Use" />,
-                  }}
-                />
-                <Stack.Screen
-                  name="(screens)/settings/Privacy"
-                  options={{
-                    header: () => <SettingsHeader title="Privacy" />,
-                  }}
-                />
-                <Stack.Screen
-                  name="(screens)/settings/HelpCenter"
-                  options={{
-                    header: () => <SettingsHeader title="Help Center" />,
-                  }}
-                />
-                <Stack.Screen
-                  name="SignOutModal"
-                  options={{ presentation: "modal" }}
-                />
-              </Stack>
-            </CartProvider>
-          </CategoryPositionProvider>
-        </MenuScrollContextProvider>
+        <SearchProvider>
+          <MenuScrollContextProvider>
+            <CategoryPositionProvider>
+              <CartProvider>
+                <Stack>
+                  <Stack.Screen
+                    name="(tabs)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(screens)/store/[restaurant]"
+                    options={{
+                      header: () => <RestaurantHeader />,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(screens)/reserving/index"
+                    options={{
+                      header: () => <ReservingHeader title="Reserving" />,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(screens)/reservations/[reservation]"
+                    options={{
+                      header: () => <ReservingHeader title="Reservation" />,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(screens)/reserving/updateReservation"
+                    options={{
+                      header: () => (
+                        <ReservingHeader title="Updating Reservation" />
+                      ),
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(screens)/menu/[menu]"
+                    options={{
+                      header: () => <MenuHeader />,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(screens)/cart/index"
+                    options={{
+                      header: () => <SettingsHeader title="My Cart" />,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(screens)/cart/checkout"
+                    options={{
+                      header: () => <CheckoutHeader />,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(screens)/cart/successfulPayment"
+                    options={{
+                      header: () => <CheckoutHeader />,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(screens)/settings/index"
+                    options={{
+                      header: () => <SettingsHeader title="Settings" />,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(screens)/settings/Preferences"
+                    options={{
+                      header: () => <SettingsHeader title="Preferences" />,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(screens)/settings/Security"
+                    options={{
+                      header: () => <SettingsHeader title="Security" />,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(screens)/settings/TermsOfUse"
+                    options={{
+                      header: () => <SettingsHeader title="Terms of Use" />,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(screens)/settings/Privacy"
+                    options={{
+                      header: () => <SettingsHeader title="Privacy" />,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(screens)/settings/HelpCenter"
+                    options={{
+                      header: () => <SettingsHeader title="Help Center" />,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="SignOutModal"
+                    options={{ presentation: "modal" }}
+                  />
+                </Stack>
+              </CartProvider>
+            </CategoryPositionProvider>
+          </MenuScrollContextProvider>
+        </SearchProvider>
       ) : (
         <Stack initialRouteName="(auth)/welcome">
           <Stack.Screen

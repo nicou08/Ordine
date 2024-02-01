@@ -292,7 +292,15 @@ async function unlikeRestaurant({
 }
 
 /***************************** SCREEN *****************************/
-
+/**
+ * `RestaurantScreen` is a component that renders the restaurant screen.
+ * It fetches and displays information for a specific restaurant.
+ *
+ * @component
+ * @example
+ * // The component is typically used in a route configuration.
+ * <Route path="/restaurant/:id" component={RestaurantScreen} />
+ */
 export default function RestaurantScreen() {
   // Get session
   const [session, setSession] = useState<Session | null>(null);
