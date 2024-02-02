@@ -74,7 +74,10 @@ export default function CheckoutScreen() {
       total_price: Number(totalPrice),
     });
     clearCart();
-    router.replace("/reservations");
+    //router.replace("/reservations");
+    router.back();
+    router.back();
+    router.back();
   };
 
   return (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
   Modal,
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
 import {
   Ionicons,
   AntDesign,
@@ -106,7 +107,19 @@ export default function ReservationScreen() {
   const [reservationFormattedDate, setReservationFormattedDate] = useState("");
 
   // Fetch reservation info
-  useEffect(() => {
+  // useEffect(() => {
+  //   if (searchParams.reservation_id) {
+  //     fetchReservationInfo({
+  //       reservation_id: searchParams.reservation_id as string,
+  //     }).then((data) => {
+  //       if (data) {
+  //         setReservationInfo(data[0]);
+  //         console.log("RESERVATION INFO", data);
+  //       }
+  //     });
+  //   }
+  // }, [searchParams.reservation_id]);
+  const fetchReservationInfoCallback = useCallback(() => {
     if (searchParams.reservation_id) {
       fetchReservationInfo({
         reservation_id: searchParams.reservation_id as string,
@@ -118,6 +131,19 @@ export default function ReservationScreen() {
       });
     }
   }, [searchParams.reservation_id]);
+
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    fetchReservationInfoCallback();
+
+    const unsubscribe = navigation.addListener(
+      "focus",
+      fetchReservationInfoCallback
+    );
+
+    return unsubscribe;
+  }, [navigation, fetchReservationInfoCallback]);
 
   // Format date
   useEffect(() => {
