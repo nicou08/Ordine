@@ -7,6 +7,7 @@ import {
   ScrollView,
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
 import { Ionicons, FontAwesome5, MaterialIcons } from "@expo/vector-icons";
 import { supabase } from "../../utils/supabase";
 import { Session } from "@supabase/supabase-js";
@@ -163,16 +164,39 @@ export default function ReservationsScreen() {
   }, []);
 
   // Get reservations from user ID
-  useEffect(() => {
+  // useEffect(() => {
+  //   if (session) {
+  //     fetchReservations({ user_id: session?.user?.id }).then((data: any) => {
+  //       if (data) {
+  //         setReservations(data);
+  //         //console.log("RESERVATIONS", data);
+  //       }
+  //     });
+  //   }
+  // }, [session]);
+
+  const fetchReservationsCallback = () => {
     if (session) {
       fetchReservations({ user_id: session?.user?.id }).then((data: any) => {
         if (data) {
           setReservations(data);
-          //console.log("RESERVATIONS", data);
         }
       });
     }
-  }, [session]);
+  };
+
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    fetchReservationsCallback();
+
+    const unsubscribe = navigation.addListener(
+      "focus",
+      fetchReservationsCallback
+    );
+
+    return unsubscribe;
+  }, [navigation, fetchReservationsCallback]);
 
   return reservations.length > 0 ? (
     <ScrollView

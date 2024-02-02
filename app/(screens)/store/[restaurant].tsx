@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   ScrollView,
   View,
@@ -354,16 +354,29 @@ export default function RestaurantScreen() {
   }, [setImages]);
 
   // Get restaurant reviews
-  useEffect(() => {
+  // useEffect(() => {
+  //   fetchRestaurantReviews({
+  //     restaurantID: searchParams.restaurant as string,
+  //   }).then((data) => {
+  //     if (data) {
+  //       setRestaurantReviews(data);
+  //       //console.log("restaurantReviews", data);
+  //     }
+  //   });
+  // }, []);
+  const fetchReviews = useCallback(() => {
     fetchRestaurantReviews({
       restaurantID: searchParams.restaurant as string,
     }).then((data) => {
       if (data) {
         setRestaurantReviews(data);
-        //console.log("restaurantReviews", data);
       }
     });
-  }, []);
+  }, [searchParams.restaurant]);
+
+  useEffect(() => {
+    fetchReviews();
+  }, [fetchReviews]);
 
   /*
    *
@@ -445,6 +458,8 @@ export default function RestaurantScreen() {
       name: userName,
       rating: review.rating,
       review: review.comment,
+    }).then(() => {
+      fetchReviews();
     });
   };
 

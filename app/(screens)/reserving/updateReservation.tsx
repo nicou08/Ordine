@@ -8,7 +8,9 @@ import {
   Platform,
   Modal,
 } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams, useFocusEffect } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
+import { StackActions } from "@react-navigation/native";
 import { AntDesign, Entypo } from "@expo/vector-icons";
 import { supabase } from "../../../utils/supabase";
 import Carousel from "react-native-reanimated-carousel";
@@ -439,7 +441,10 @@ export default function UpdateReservationScreen() {
               participants: reservationPeople,
               seat_preference: reservationSeatPreference,
             });
-            router.replace("/reservations");
+
+            //router.replace("/reservations");
+            router.back();
+            router.back();
           }}
           style={{
             backgroundColor: "#CE3535",

@@ -287,11 +287,13 @@ export default function ReservationScreen() {
                 </Text>
                 <Text style={{ fontSize: 18 }}>
                   $
-                  {reservationInfo.preordered_items.reduce(
-                    (total: number, menuItem: CartItem) =>
-                      total + menuItem.quantity * menuItem.price,
-                    0
-                  )}
+                  {reservationInfo.preordered_items
+                    .reduce(
+                      (total: number, menuItem: CartItem) =>
+                        total + menuItem.quantity * menuItem.price,
+                      0
+                    )
+                    .toFixed(2)}
                 </Text>
               </View>
               <View
@@ -308,7 +310,7 @@ export default function ReservationScreen() {
                 </Text>
                 <Text style={{ fontSize: 18 }}>
                   {" "}
-                  ${reservationInfo?.price_of_tax}
+                  ${reservationInfo?.price_of_tax.toFixed(2)}
                 </Text>
               </View>
 
@@ -344,7 +346,7 @@ export default function ReservationScreen() {
                       fontWeight: "bold",
                     }}
                   >
-                    {reservationInfo?.price_of_items}
+                    {reservationInfo?.price_of_items.toFixed(2)}
                   </Text>
                 </View>
               </View>
