@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Text,
   View,
@@ -27,7 +27,7 @@ async function fetchRestaurantInfo({
     .select("name,address,distance_away")
     .eq("id", restaurant_id);
   if (error) {
-    console.log("error", error);
+    console.log("Error fetching restaurant info in reservations", error);
     return null;
   } else {
     return data;
@@ -43,7 +43,7 @@ async function fetchReservations({ user_id }: { user_id: string }) {
     .select("id,restaurant,date,time,participants")
     .eq("user_id", user_id);
   if (error) {
-    console.log("error", error);
+    console.log("Error geting reservations from user ID", error);
     return null;
   } else {
     return data;
@@ -175,15 +175,16 @@ export default function ReservationsScreen() {
   //   }
   // }, [session]);
 
-  const fetchReservationsCallback = () => {
+  const fetchReservationsCallback = useCallback(() => {
     if (session) {
+      console.log("FETCHING RESERVATIONS");
       fetchReservations({ user_id: session?.user?.id }).then((data: any) => {
         if (data) {
           setReservations(data);
         }
       });
     }
-  };
+  }, [session]);
 
   const navigation = useNavigation();
 

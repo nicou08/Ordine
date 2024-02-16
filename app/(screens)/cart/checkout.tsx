@@ -78,6 +78,7 @@ export default function CheckoutScreen() {
     router.back();
     router.back();
     router.back();
+    router.back();
   };
 
   return (
